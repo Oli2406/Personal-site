@@ -1,9 +1,10 @@
 import './App.css'
-import {useState} from "react";
+import React, { useState } from "react";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 function App() {
 
-    const [skills, setSkills] = useState([
+    const [skills, setSkills] = useLocalStorage("skills", [
         { id: 1, name: "React fluency", description: "Learning hooks", progress: 5 },
         { id: 2, name: "Guitar playing", description: "Learning songs", progress: 25 },
         { id: 3, name: "Snowboarding", description: "Learning to jump", progress: 65 },
@@ -17,6 +18,10 @@ function App() {
         description: "",
         progress: "",
     });
+
+    const handleSkillDeletion = (id: number) => {
+        setSkills(skills.filter((skill) => skill.id !== id));
+    }
 
     const handleSkillAddition = () => setShowMenu(true);
 
@@ -51,6 +56,13 @@ function App() {
                             className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl hover:shadow-indigo-500/30 transition-transform duration-500 hover:-translate-y-1 animate-fade-in-up"
                             style={{animationDelay: `${index * 150}ms`}}
                         >
+                            <button
+                                onClick={() => handleSkillDeletion(skill.id)}
+                                className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg font-semibold transition-colors duration-200"
+                                aria-label={"delete skill"}
+                                >
+                                ✕
+                            </button>
                             <div className="flex items-center justify-between mb-2">
                                 <h2 className="text-2xl font-semibold">{skill.name}</h2>
                                 <span className="text-sm text-gray-400">{skill.progress}%</span>
