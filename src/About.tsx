@@ -1,3 +1,5 @@
+import { SocialIcon } from 'react-social-icons'
+
 export function About() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-gray-100">
@@ -7,12 +9,26 @@ export function About() {
                 </h1>
 
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
-                    <div className="flex-shrink-0 flex justify-center md:justify-start">
+                    <div className="flex-shrink-0 flex flex-col items-center md:items-center">
                         <img
                             src="src/assets/selfie.jpeg"
                             alt="Oliver Kastner"
                             className="w-40 h-40 rounded-full border-4 border-indigo-400/50 shadow-lg object-cover hover:scale-105 transition-transform duration-300"
                         />
+                        <div className="flex justify-center gap-4 mt-8">
+                            <SocialIcon
+                                url={"https://github.com/Oli2406"}
+                                className="w-10 h-10 bg-white/10 rounded-full transition-transform hover:scale-110"
+                                fgColor="#fff"
+                                bgColor="transparent"
+                            />
+                            <SocialIcon
+                                url={"https://www.linkedin.com/in/oliver-kastner-507a45250/"}
+                                className="w-10 h-10 bg-white/10 rounded-full transition-transform hover:scale-110"
+                                fgColor="#fff"
+                                bgColor="transparent"
+                            />
+                        </div>
                     </div>
 
                     <div className="text-center md:text-left space-y-4">
