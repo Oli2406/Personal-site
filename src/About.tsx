@@ -1,9 +1,11 @@
 import { SocialIcon } from 'react-social-icons'
+import Projects from './Projects.tsx'
 
 export function About() {
+
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-gray-100">
-            <div className="max-w-4xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in-up">
+            <div className="max-w-4xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in-up mt-4">
                 <h1 className="text-4xl font-bold text-center text-indigo-300 mb-4">
                     About Me
                 </h1>
@@ -69,6 +71,7 @@ export function About() {
                     </div>
                 </div>
             </div>
+            <Projects/>
         </div>
     );
 }
