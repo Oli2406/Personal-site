@@ -44,10 +44,12 @@ function App() {
     }
 
     return (
-        <div className="min-h-screen w-full overflow-hidden bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 text-gray-100 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#312e81_0%,_transparent_50%),radial-gradient(circle_at_bottom_right,_#9333ea_0%,_transparent_50%)]" />
-            <div className="flex flex-col items-center justify-center min-h-screen px-4">
-                <h1 className="text-4xl font-bold mb-8 text-center">My Skills</h1>
+        <div className="overflow-hidden">
+            <div className="flex flex-col items-center justify-center px-4 mt-4">
+
+                <h1 className="text-4xl font-bold mb-8 text-center">
+                    My Skills
+                </h1>
 
                 <ul className="grid gap-6 w-full max-w-md">
                     {skills.map((skill, index) => (
