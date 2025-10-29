@@ -1,7 +1,6 @@
 package com.oliver.portfolio.service;
 
 import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

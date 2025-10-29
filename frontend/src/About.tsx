@@ -1,6 +1,6 @@
 import { SocialIcon } from 'react-social-icons'
 import Projects from './Projects.tsx'
-import {useState} from "react";
+import { useState } from "react";
 
 export function About() {
 

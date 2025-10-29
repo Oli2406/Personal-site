@@ -1,47 +1,53 @@
 import './App.css'
-import React, { useState } from "react";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import React, {useEffect, useState} from "react";
+import {type Skill, SkillService} from "./Service/SkillService.ts";
 
 function App() {
 
-    const [skills, setSkills] = useLocalStorage("skills", [
-        { id: 1, name: "React fluency", description: "Learning hooks", progress: 5 },
-        { id: 2, name: "Guitar playing", description: "Learning songs", progress: 25 },
-        { id: 3, name: "Snowboarding", description: "Learning to jump", progress: 65 },
-    ]);
-
+    const [skills, setSkills] = useState<Skill[]>([]);
     const [showMenu, setShowMenu] = useState(false);
-
     const [newSkill, setNewSkill] = useState({
         id: 0,
         name: "",
         description: "",
-        progress: "",
+        progress: 0,
     });
 
-    const handleSkillDeletion = (id: number) => {
-        setSkills(skills.filter((skill) => skill.id !== id));
+    useEffect(() => {
+        SkillService.getAll()
+            .then(setSkills)
+            .catch((err) => console.error("Failed to load skills:", err));
+    }, []);
+
+    const handleSkillDeletion = async (id: number) => {
+        console.log(SkillService.getAll())
+        try {
+            await SkillService.delete(id);
+            if(skills !== undefined){
+                setSkills(skills.filter((s) => s.id !== id));
+            }
+        } catch(err) {
+            console.error("Failed to delete skills:", err);
+        }
     }
 
     const handleSkillAddition = () => setShowMenu(true);
 
     const handleCloseMenu = () => setShowMenu(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(newSkill === undefined || !newSkill.name || !newSkill.description || !newSkill.progress) return;
+        if (!newSkill.name || !newSkill.description) return;
 
-        setSkills([...skills, {
-            id: Date.now(),
-            name: newSkill.name,
-            description: newSkill.description,
-            progress: Number(newSkill.progress),
-        },
-        ]);
-
-        setNewSkill({id: -1, name: "", description: "", progress: "0" });
-        setShowMenu(false);
-    }
+        try {
+            const created = await SkillService.create(newSkill);
+            setSkills([...skills, created]);
+            setNewSkill({ id: 0, name: "", description: "", progress: 0 });
+            setShowMenu(false);
+        } catch (err) {
+            console.error("Failed to create skill:", err);
+        }
+    };
 
     return (
         <div className="overflow-hidden">
@@ -113,7 +119,7 @@ function App() {
                                         min="0"
                                         max="100"
                                         value={newSkill.progress}
-                                        onChange={(e) => setNewSkill({...newSkill, progress: e.target.value})}
+                                        onChange={(e) => setNewSkill({...newSkill, progress: Number(e.target.value)})}
                                         className="w-full p-3 rounded-xl bg-white/10 border border-white/20 placeholder-gray-400 focus:outline-none focus:border-indigo-400"
                                     />
                                 </div>
