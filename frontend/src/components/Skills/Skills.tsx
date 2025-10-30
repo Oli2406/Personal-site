@@ -1,9 +1,11 @@
 import './App.css'
 import React, {useEffect, useState} from "react";
 import {type Skill, SkillService} from "../../Service/SkillService.ts";
+import {useAuth} from "../../contexts/AuthContext.tsx";
 
 function Skills() {
 
+    const {token, isLoggedIn} = useAuth();
     const [skills, setSkills] = useState<Skill[]>([]);
     const [showMenu, setShowMenu] = useState(false);
     const [newSkill, setNewSkill] = useState({
@@ -14,16 +16,22 @@ function Skills() {
     });
 
     useEffect(() => {
-        SkillService.getAll()
-            .then(setSkills)
-            .catch((err) => console.error("Failed to load skills:", err));
+        if(!token) return;
+        if(isLoggedIn && token) {
+            SkillService.getAll(token)
+                .then(setSkills)
+                .catch((err) => console.error("Failed to load skills:", err));
+        }
     }, []);
 
     const handleSkillDeletion = async (id: number) => {
         try {
-            await SkillService.delete(id);
-            if(skills !== undefined){
-                setSkills(skills.filter((s) => s.id !== id));
+            if(!token) return;
+            if(token && isLoggedIn) {
+                await SkillService.delete(id, token);
+                if(skills !== undefined){
+                    setSkills(skills.filter((s) => s.id !== id));
+                }
             }
         } catch(err) {
             console.error("Failed to delete skills:", err);
@@ -39,10 +47,13 @@ function Skills() {
         if (!newSkill.name || !newSkill.description) return;
 
         try {
-            const created = await SkillService.create(newSkill);
-            setSkills([...skills, created]);
-            setNewSkill({ id: 0, name: "", description: "", progress: 0 });
-            setShowMenu(false);
+            if(!token) return;
+            if(token && isLoggedIn) {
+                const created = await SkillService.create(newSkill, token);
+                setSkills([...skills, created]);
+                setNewSkill({ id: 0, name: "", description: "", progress: 0 });
+                setShowMenu(false);
+            }
         } catch (err) {
             console.error("Failed to create skill:", err);
         }

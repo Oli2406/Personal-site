@@ -8,27 +8,39 @@ export interface Skill {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const SkillService = {
+    async getAll(token?: string | null): Promise<Skill[]> {
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
 
-    async getAll(): Promise<Skill[]> {
-        const response = await fetch(`${API_BASE_URL}/skills`);
-        if(!response.ok) throw new Error(response.statusText);
+        const response = await fetch(`${API_BASE_URL}/skills`, { headers });
+
+        if (!response.ok) throw new Error(response.statusText);
         return response.json();
     },
 
-    async create(skill: Skill): Promise<Skill> {
+    async create(skill: Skill, token?: string | null): Promise<Skill> {
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+
         const response = await fetch(`${API_BASE_URL}/skills`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify(skill),
         });
-        if(!response.ok) throw new Error(response.statusText);
+
+        if (!response.ok) throw new Error(response.statusText);
         return response.json();
     },
 
-    async delete(id: number): Promise<void> {
+    async delete(id: number, token?: string | null): Promise<void> {
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+
         const response = await fetch(`${API_BASE_URL}/skills/${id}`, {
             method: "DELETE",
+            headers,
         });
-        if(!response.ok) throw new Error(response.statusText);
-    }
-}
+
+        if (!response.ok) throw new Error(response.statusText);
+    },
+};

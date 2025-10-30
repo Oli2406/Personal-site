@@ -1,7 +1,10 @@
 import React, {useState} from "react";
 import {AuthService} from "../../Service/AuthService.ts";
+import {useNavigate} from "react-router-dom";
 
 export default function RegisterPage() {
+
+    const navigate = useNavigate();
 
     const [newUser, setNewUser] = useState({
         username: "",
@@ -23,6 +26,7 @@ export default function RegisterPage() {
             if(repeatPassword.password === repeatPassword.repeatPassword) {
                 await AuthService.register(newUser)
                 setNewUser({username: "", password: "", role: "" })
+                navigate("/");
             } else {
                 console.error("Password and repeat password don't match")
             }
