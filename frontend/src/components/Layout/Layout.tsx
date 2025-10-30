@@ -9,13 +9,13 @@ export default function Layout() {
                 <h1>🌟 My First React App</h1>
                 <div className="flex items-center gap-4 text-sm">
                     <button className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 transition">
-                        <NavLink to="/">Home</NavLink>
-                    </button>
-                    <button className="px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 transition">
-                        Skills
+                        <NavLink to="/">Skills</NavLink>
                     </button>
                     <button className="px-4 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 transition">
                         <NavLink to="/about">About</NavLink>
+                    </button>
+                    <button className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 transition">
+                        <NavLink to="/register">Register</NavLink>
                     </button>
                 </div>
             </header>

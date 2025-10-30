@@ -34,6 +34,7 @@ public class AuthEndpoint {
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) throws ConflictException {
     LOGGER.info("Register request: {}", request);
+    request.setRole("user");
     return ResponseEntity.ok(authService.register(request));
   }
   

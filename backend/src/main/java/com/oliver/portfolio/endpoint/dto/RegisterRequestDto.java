@@ -1,5 +1,7 @@
 package com.oliver.portfolio.endpoint.dto;
 
+import com.oliver.portfolio.enums.Role;
+
 public class RegisterRequestDto {
   private String username;
   private String password;

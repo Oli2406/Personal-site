@@ -1,8 +1,8 @@
 import './App.css'
 import React, {useEffect, useState} from "react";
-import {type Skill, SkillService} from "./Service/SkillService.ts";
+import {type Skill, SkillService} from "../../Service/SkillService.ts";
 
-function App() {
+function Skills() {
 
     const [skills, setSkills] = useState<Skill[]>([]);
     const [showMenu, setShowMenu] = useState(false);
@@ -147,4 +147,4 @@ function App() {
     );
 }
 
-export default App
+export default Skills
