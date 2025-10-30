@@ -3,6 +3,8 @@ package com.oliver.portfolio.endpoint;
 import com.oliver.portfolio.endpoint.dto.AuthResponseDto;
 import com.oliver.portfolio.endpoint.dto.LoginRequestDto;
 import com.oliver.portfolio.endpoint.dto.RegisterRequestDto;
+import com.oliver.portfolio.exception.ConflictException;
+import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +32,13 @@ public class AuthEndpoint {
   }
   
   @PostMapping("/register")
-  public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) {
+  public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) throws ConflictException {
     LOGGER.info("Register request: {}", request);
     return ResponseEntity.ok(authService.register(request));
   }
   
   @PostMapping("/login")
-  public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequestDto request) {
+  public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequestDto request) throws ValidationException {
     LOGGER.info("Login request: {}", request);
     return ResponseEntity.ok(authService.login(request));
   }

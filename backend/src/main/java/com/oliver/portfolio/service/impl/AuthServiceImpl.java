@@ -4,10 +4,13 @@ import com.oliver.portfolio.endpoint.dto.AuthResponseDto;
 import com.oliver.portfolio.endpoint.dto.LoginRequestDto;
 import com.oliver.portfolio.endpoint.dto.RegisterRequestDto;
 import com.oliver.portfolio.enums.Role;
+import com.oliver.portfolio.exception.ConflictException;
+import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.model.User;
 import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.AuthService;
 import com.oliver.portfolio.service.JwtService;
+import com.oliver.portfolio.service.validator.AuthValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final AuthValidator authValidator;
   
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -30,15 +34,18 @@ public class AuthServiceImpl implements AuthService {
   public AuthServiceImpl(UserRepository userRepository,
                          PasswordEncoder passwordEncoder,
                          JwtService jwtService,
-                         AuthenticationManager authenticationManager) {
+                         AuthenticationManager authenticationManager,
+                         AuthValidator authValidator) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtService = jwtService;
     this.authenticationManager = authenticationManager;
+    this.authValidator = authValidator;
   }
   
   @Override
-  public AuthResponseDto register(RegisterRequestDto request) {
+  public AuthResponseDto register(RegisterRequestDto request) throws ConflictException {
+    authValidator.validateRegister(request);
     User user = new User();
     user.setUsername(request.getUsername());
     user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -51,7 +58,8 @@ public class AuthServiceImpl implements AuthService {
   }
   
   @Override
-  public AuthResponseDto login(LoginRequestDto request) {
+  public AuthResponseDto login(LoginRequestDto request) throws ValidationException {
+    authValidator.validateLogin(request);
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
     );
