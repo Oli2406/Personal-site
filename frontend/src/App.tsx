@@ -20,7 +20,6 @@ function App() {
     }, []);
 
     const handleSkillDeletion = async (id: number) => {
-        console.log(SkillService.getAll())
         try {
             await SkillService.delete(id);
             if(skills !== undefined){
