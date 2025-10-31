@@ -8,11 +8,13 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Login from "./components/Authentication/Login.tsx";
 import Register from "./components/Authentication/Register.tsx"
 import {AuthProvider} from "./contexts/AuthContext.tsx";
+import {ToastContainer} from "react-toastify";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <BrowserRouter>
           <AuthProvider>
+              <ToastContainer position="top-right" autoClose={3000} />
               <Routes>
                   <Route path="/" element={<Layout />} >
                       <Route index element={<Skills />} />

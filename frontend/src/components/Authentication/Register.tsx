@@ -1,8 +1,12 @@
 import React, {useState} from "react";
 import {AuthService} from "../../Service/AuthService.ts";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
 export default function RegisterPage() {
+
+    const notifySuccess = (message:string) => toast.success(message);
+    const notifyError = (message: string) => toast.error(message);
 
     const navigate = useNavigate();
 
@@ -20,18 +24,22 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!newUser.username || !newUser.password) return;
-        setRepeatPassword({...repeatPassword, password: newUser.password});
+        setRepeatPassword({...repeatPassword, password: newUser.password.trim()});
+        setNewUser({...newUser, password: newUser.password.trim()});
+        setNewUser({...newUser, username: newUser.username.trim()});
 
         try {
             if(repeatPassword.password === repeatPassword.repeatPassword) {
-                await AuthService.register(newUser)
-                setNewUser({username: "", password: "", role: "" })
+                await AuthService.register(newUser);
+                setNewUser({username: "", password: "", role: "" });
+                notifySuccess("Account registered successfully");
                 navigate("/");
             } else {
-                console.error("Password and repeat password don't match")
+                console.error("Password and repeat password don't match");
             }
         } catch (err) {
             console.error("Failed to register user:", err);
+            notifyError("Failed to register user");
         }
     }
 

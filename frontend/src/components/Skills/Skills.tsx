@@ -63,9 +63,15 @@ function Skills() {
         <div className="overflow-hidden">
             <div className="flex flex-col items-center justify-center px-4 mt-4">
 
-                <h1 className="text-4xl font-bold mb-8 text-center">
-                    My Skills
-                </h1>
+                {isLoggedIn ? (
+                    <h1 className="text-4xl font-bold mb-8 text-center">
+                        My Skills
+                    </h1>
+                ) : (
+                    <h1 className="text-4xl font-bold mb-8 text-center">
+                        Log in to view your skills
+                    </h1>
+                )}
 
                 <ul className="grid gap-6 w-full max-w-md">
                     {skills.map((skill, index) => (
@@ -94,11 +100,16 @@ function Skills() {
                             </div>
                         </li>
                     ))}
-                    <button
-                        className="bg-white/10 backdrop-blur-xl border border-white/20 text-gray-100 font-semibold px-6 py-3 rounded-full shadow-2xl hover:shadow-indigo-500/30 hover:bg-white/20 transition-all duration-300"
-                    onClick={handleSkillAddition}>
-                        + Add Skill
-                    </button>
+                    {isLoggedIn ? (
+                        <button
+                            className="bg-white/10 backdrop-blur-xl border border-white/20 text-gray-100 font-semibold px-6 py-3 rounded-full shadow-2xl hover:shadow-indigo-500/30 hover:bg-white/20 transition-all duration-300"
+                            onClick={handleSkillAddition}>
+                            + Add Skill
+                        </button>
+                    ) : (
+                        <div></div>
+                    )}
+
                     {showMenu && (
                         <div
                             className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">

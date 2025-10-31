@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import {AuthService} from "../../Service/AuthService.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css"
+import {toast} from "react-toastify";
 
 export default function LoginPage() {
+
+    const notifySuccess = () => toast.success("Login successful");
+    const notifyError = () => toast.error("Username or Password incorrect");
 
     const { login } = useAuth();
 
@@ -17,14 +22,18 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!newUser.username || !newUser.password) return;
+        const username = newUser.username.trim();
+        const password = newUser.password.trim();
 
         try {
-            const token = await AuthService.login(newUser);
+            const token = await AuthService.login({username, password});
             setNewUser({username: "", password: ""});
             login(token);
+            notifySuccess();
             navigate("/");
         } catch (err) {
             console.error("Failed to log in user: ", err);
+            notifyError()
         }
     }
 

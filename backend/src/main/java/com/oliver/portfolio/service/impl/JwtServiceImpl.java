@@ -7,9 +7,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.lang.invoke.MethodHandles;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +23,9 @@ import java.util.function.Function;
 public class JwtServiceImpl implements JwtService {
   
   private final String SECRET_KEY = "14C29B6C24C38DA54797A582A7F55j1Y4N8QlUSATU94a44Q9weNGbx4PuiPy";
+  
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   
   @Override
   public String extractUsername(String token) {
@@ -34,6 +40,7 @@ public class JwtServiceImpl implements JwtService {
   
   @Override
   public String generateToken(User user) {
+    LOGGER.info("Generating token");
     return generateToken(new HashMap<>(), user);
   }
   
