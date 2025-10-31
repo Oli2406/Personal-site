@@ -21,12 +21,7 @@ export const AuthService = {
 
         if (!response.ok) throw new Error(response.statusText);
 
-        const data = await response.json();
-
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("username", data.username);
-
-        return data.token;
+        return await response.json();
     },
 
     async register(registerData: RegisterRequest): Promise<void> {
