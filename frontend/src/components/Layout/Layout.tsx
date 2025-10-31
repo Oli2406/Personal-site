@@ -10,8 +10,8 @@ export default function Layout() {
 
     const handleLogout = async () => {
         logout();
-        notifySuccess("Successfully logged out!");
         window.location.reload();
+        notifySuccess("Successfully logged out!");
     }
 
     return (

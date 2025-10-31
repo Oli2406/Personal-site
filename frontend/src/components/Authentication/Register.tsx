@@ -23,25 +23,30 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!newUser.username || !newUser.password) return;
-        setRepeatPassword({...repeatPassword, password: newUser.password.trim()});
-        setNewUser({...newUser, password: newUser.password.trim()});
-        setNewUser({...newUser, username: newUser.username.trim()});
 
-        try {
-            if(repeatPassword.password === repeatPassword.repeatPassword) {
-                await AuthService.register(newUser);
-                setNewUser({username: "", password: "", role: "" });
-                notifySuccess("Account registered successfully");
-                navigate("/");
-            } else {
-                console.error("Password and repeat password don't match");
-            }
-        } catch (err) {
-            console.error("Failed to register user:", err);
-            notifyError("Failed to register user");
+        // Trim values locally
+        const username = newUser.username.trim();
+        const password = newUser.password.trim();
+        const repeated = repeatPassword.repeatPassword.trim();
+        if (!username || !password) {
+            notifyError("Please enter username and password");
+            return;
         }
-    }
+        if (password !== repeated) {
+            notifyError("Password and repeat password don't match");
+            return;
+        }
+        try {
+            await AuthService.register({ username, password, role: newUser.role });
+            setNewUser({ username: "", password: "", role: "" });
+            setRepeatPassword({ password: "", repeatPassword: "" });
+            notifySuccess("Account registered successfully");
+            navigate("/");
+        } catch (err: any) {
+            console.error("Registration error:", err);
+            notifyError(err.errors.toString().substring(1, err.errors.length - 1))
+        }
+    };
 
     return (
         <div className="flex items-center justify-center mt-4 text-gray-100 px-4">

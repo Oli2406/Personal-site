@@ -30,6 +30,9 @@ export const AuthService = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(register),
         });
-        if(!response.ok) throw new Error(response.statusText);
+        if(!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw errorData || {message: "Unknown error occurred."};
+        }
     },
 }
