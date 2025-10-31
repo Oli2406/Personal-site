@@ -40,12 +40,11 @@ public class JwtServiceImpl implements JwtService {
   
   @Override
   public String generateToken(User user) {
-    LOGGER.info("Generating token");
-    return generateToken(new HashMap<>(), user);
-  }
-  
-  @Override
-  public String generateToken(Map<String, Object> claims, User user) {
+    LOGGER.info("Generating token for user: {}", user.getUsername());
+    Map<String, Object> claims = new HashMap<>();
+    claims.put("userId", user.getId());
+    claims.put("role", user.getRole());
+    
     return Jwts.builder()
               .setClaims(claims)
               .setSubject(user.getUsername())

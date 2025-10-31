@@ -14,13 +14,18 @@ public class Skill {
   private String description;
   private int progress;
   
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+  
   public Skill() {
   }
   
-  public Skill(String name, String description, int progress) {
+  public Skill(String name, String description, int progress, User user) {
     this.name = name;
     this.description = description;
     this.progress = progress;
+    this.user = user;
   }
   
   public int getId() {
@@ -55,10 +60,15 @@ public class Skill {
     this.progress = progress;
   }
   
-  
-  
-  public SkillDetailDto skillDetailDtoToEntity(Skill skill) {
-    return new SkillDetailDto(skill);
+  public User getUser() {
+    return user;
   }
   
+  public void setUser(User user) {
+    this.user = user;
+  }
+  
+  public SkillDetailDto skillDetailDtoToEntity(Skill skill, User user) {
+    return new SkillDetailDto(skill, user);
+  }
 }

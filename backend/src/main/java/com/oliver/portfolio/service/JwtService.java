@@ -14,7 +14,5 @@ public interface JwtService {
   
   public String generateToken(User user);
   
-  public String generateToken(Map<String, Object> claims, User user);
-  
   public boolean validateToken(String token, UserDetails userDetails);
 }

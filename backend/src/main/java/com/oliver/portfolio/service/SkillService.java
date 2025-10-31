@@ -1,6 +1,7 @@
 package com.oliver.portfolio.service;
 
 import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
+import com.oliver.portfolio.model.User;
 
 import java.util.List;
 
@@ -10,5 +11,7 @@ public interface SkillService {
   
   public List<SkillDetailDto> getAllSkills();
   
-  public SkillDetailDto createSkill(SkillDetailDto skill);
+  List<SkillDetailDto> getAllSkillsById(User user);
+  
+  public SkillDetailDto createSkill(SkillDetailDto skill, User user);
 }

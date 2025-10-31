@@ -1,13 +1,20 @@
 package com.oliver.portfolio.model;
 
 import com.oliver.portfolio.enums.Role;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -20,6 +27,9 @@ public class User {
   private String username;
   
   private String password;
+  
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Skill> skills = new ArrayList<>();
   
   @Enumerated(EnumType.STRING)
   private Role role;
