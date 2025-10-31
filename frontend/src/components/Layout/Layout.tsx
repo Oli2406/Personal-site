@@ -6,7 +6,9 @@ export default function Layout() {
 
     const notifySuccess = (message:string) => toast.success(message);
 
-    const { isLoggedIn, logout } = useAuth();
+    const { isLoggedIn, logout, getLoggedInUsername } = useAuth();
+
+    const username = getLoggedInUsername();
 
     const handleLogout = async () => {
         logout();
@@ -20,9 +22,9 @@ export default function Layout() {
             <header
                 className="sticky top-0 z-50 w-full flex items-center justify-between bg-gray-900 backdrop-blur-md border-b border-white/20 shadow-lg px-8 py-4 text-2xl font-semibold">
                 {!isLoggedIn ? (
-                    <h1>🌟 Hello stranger</h1>
+                    <h1>🌟 Hello Stranger</h1>
                 ) : (
-                    <h1>👋 Welcome to my personal Website</h1>
+                    <h1>👋 Welcome {username}</h1>
                 )
                 }
                 <div className="flex items-center gap-4 text-sm">
