@@ -40,7 +40,7 @@ You can run the entire stack (frontend, backend, and database) with a single com
 | **Frontend** | React • TypeScript • Vite • TailwindCSS|
 | **Backend** | Spring Boot • Java 21 • JPA |
 | **Database** | PostgreSQL 16 |
-| **DevOps** | Docker • GitHub |
+| **DevOps** | Docker • Git |
 ---
 
 This project is currently under active development
