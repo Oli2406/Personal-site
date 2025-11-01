@@ -1,3 +1,5 @@
+import type {LoginPayload} from "../contexts/AuthContext.tsx";
+
 export interface LoginRequest {
     username: string;
     password: string;
@@ -12,16 +14,18 @@ export interface RegisterRequest {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthService = {
-    async login(loginData: LoginRequest): Promise<string> {
+    async login(loginData: LoginRequest): Promise<LoginPayload> {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(loginData),
         });
 
-        if (!response.ok) throw new Error(response.statusText);
-
-        return await response.json();
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        const data: LoginPayload = await response.json();
+        return data;
     },
 
     async register(registerData: RegisterRequest): Promise<void> {

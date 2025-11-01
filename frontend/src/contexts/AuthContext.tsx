@@ -12,7 +12,7 @@ interface AuthContextType {
     getLoggedInUsername: () => string;
 }
 
-interface LoginPayload {
+export interface LoginPayload {
     token: string;
     username: string;
     role: string;
