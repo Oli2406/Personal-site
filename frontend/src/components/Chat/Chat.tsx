@@ -1,5 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext.tsx";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 interface Message {
@@ -22,8 +22,25 @@ export default function Chat() {
     const [newRoomCode, setNewRoomCode] = useState("");
     const [message, setMessage] = useState("");
 
-    const socketRef = useRef<WebSocket | null>(null);
+    const socketsRef = useRef<Record<string, WebSocket>>({});
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const storedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
+        setRooms(
+            storedRooms.map((code: string) => ({
+                code,
+                participants: [],
+                messages: [],
+            }))
+        );
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            Object.values(socketsRef.current).forEach((ws) => ws.close());
+        };
+    }, []);
 
     const joinRoom = (code: string) => {
         if (!token) {
@@ -31,48 +48,63 @@ export default function Chat() {
             return;
         }
 
-        if (currentRoom?.code === code && socketRef.current?.readyState === WebSocket.OPEN) {
+        if (socketsRef.current[code]?.readyState === WebSocket.OPEN) {
+            const existingRoom = rooms.find((r) => r.code === code);
+            setCurrentRoom(existingRoom || { code, participants: [], messages: [] });
             return;
         }
 
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.close();
+        const joinedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
+        if (!joinedRooms.includes(code)) {
+            joinedRooms.push(code);
+            localStorage.setItem("joinedRooms", JSON.stringify(joinedRooms));
         }
 
         const ws = new WebSocket(
             `ws://localhost:8080/ws/chat?room=${code}&token=${encodeURIComponent(token)}`
         );
+        socketsRef.current[code] = ws;
 
-        socketRef.current = ws;
-        setCurrentRoom({ code, participants: [], messages: [] });
+        setRooms((prev) => {
+            if (!prev.find((r) => r.code === code)) {
+                return [...prev, { code, participants: [], messages: [] }];
+            }
+            return prev;
+        });
 
-        setRooms((prev) =>
-            prev.find((r) => r.code === code)
-                ? prev
-                : [...prev, { code, participants: [], messages: [] }]
-        );
-
-        ws.onopen = () => {
-            console.log(`Connected to room: ${code}`);
-        };
+        ws.onopen = () => console.log(`✅ Connected to room: ${code}`);
 
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
 
                 if (data.type === "ROOM_INFO") {
-                    setCurrentRoom({
-                        code,
-                        participants: data.participants,
-                        messages: data.messages || [],
-                    });
+                    setRooms((prev) =>
+                        prev.map((r) =>
+                            r.code === code
+                                ? {
+                                    ...r,
+                                    participants: data.data?.participants || [],
+                                    messages: data.data?.messages || [],
+                                }
+                                : r
+                        )
+                    );
                 } else if (data.type === "NEW_MESSAGE") {
-                    setCurrentRoom((prev) =>
-                        prev ? { ...prev, messages: [...prev.messages, data.message] } : prev
+                    setRooms((prev) =>
+                        prev.map((r) =>
+                            r.code === code
+                                ? { ...r, messages: [...r.messages, data.message] }
+                                : r
+                        )
                     );
                 } else if (data.type === "PARTICIPANTS_UPDATE") {
-                    setCurrentRoom((prev) =>
-                        prev ? { ...prev, participants: data.participants } : prev
+                    setRooms((prev) =>
+                        prev.map((r) =>
+                            r.code === code
+                                ? { ...r, participants: data.participants }
+                                : r
+                        )
                     );
                 }
             } catch (err) {
@@ -81,12 +113,12 @@ export default function Chat() {
         };
 
         ws.onclose = (e) => {
-            console.warn(`WebSocket closed (${e.code}):`, e.reason || "No reason");
+            console.warn(`⚠️ Disconnected from ${code} (${e.code}): ${e.reason || "No reason"}`);
         };
 
-        ws.onerror = (err) => {
-            console.error("WebSocket error:", err);
-        };
+        ws.onerror = (err) => console.error("WebSocket error:", err);
+
+        setCurrentRoom({ code, participants: [], messages: [] });
     };
 
     const handleJoinRoom = (e: React.FormEvent) => {
@@ -100,10 +132,10 @@ export default function Chat() {
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
-        const socket = socketRef.current;
-        if (!message.trim() || !socket || !currentRoom) return;
+        if (!currentRoom || !message.trim()) return;
 
-        if (socket.readyState !== WebSocket.OPEN) {
+        const socket = socketsRef.current[currentRoom.code];
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
             console.warn("Cannot send — WebSocket not open.");
             return;
         }
@@ -122,6 +154,9 @@ export default function Chat() {
     if (!isLoggedIn || !token) {
         return <Navigate to="/login" replace />;
     }
+
+    const currentRoomData =
+        rooms.find((r) => r.code === currentRoom?.code) || currentRoom;
 
     return (
         <div className="flex h-[80vh] gap-4 p-4 text-gray-200">
@@ -162,19 +197,19 @@ export default function Chat() {
             </div>
 
             <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col">
-                {currentRoom ? (
+                {currentRoomData ? (
                     <>
                         <div className="border-b border-white/10 p-3 flex justify-between">
                             <h2 className="text-xl font-semibold text-indigo-300">
-                                Room: {currentRoom.code}
+                                Room: {currentRoomData.code}
                             </h2>
                             <p className="text-sm text-gray-400">
-                                Participants: {currentRoom.participants.join(", ")}
+                                Participants: {(currentRoomData.participants ?? []).join(", ") || "None"}
                             </p>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                            {currentRoom.messages.map((msg, i) => (
+                            {currentRoomData.messages.map((msg, i) => (
                                 <div
                                     key={i}
                                     className={`p-3 rounded-xl max-w-[70%] ${
