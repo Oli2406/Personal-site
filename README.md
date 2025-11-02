@@ -2,6 +2,32 @@
 
 This is my personal portfolio website which will be built to showcase my projects, skills and background.
 
+## 📸 Screenshots
+
+<img width="2560" height="1231" alt="image" src="https://github.com/user-attachments/assets/5c415d7f-a222-47eb-bd4c-501e5c9c2ae5" />
+<img width="2542" height="1235" alt="image" src="https://github.com/user-attachments/assets/ffd9304f-a7f1-4ede-9aa5-6ae0ef0742cb" />
+<img width="2540" height="1239" alt="image" src="https://github.com/user-attachments/assets/261b0a0a-4de8-47aa-9d1d-e24fc06bef23" />
+
+
+---
+
+## 🧩 Features
+
+Here are some of the main features included (or planned):
+
+| Category | Description |
+|-----------|--------------|
+| 💼 **Portfolio Showcase** | Highlight selected personal and professional projects with details and links. |
+| 👤 **About Section** | Present personal background, education, and experience. |
+| 💡 **Skill Tracker** | Create and track your personal goals and progress in them. |
+| ⚡ **Real-time Chat (WIP)** | Interactive group-chatroom powered by WebSockets. |
+| 🧠 **Authentication** | Secure login system using JWT-based authentication. |
+| 🗃️ **Database Integration** | PostgreSQL backend with persistent storage for messages, accounts, chatrooms and skills. |
+| 🎨 **Modern UI** | Built with TailwindCSS for a sleek and responsive design. |
+
+---
+
+
 ## 🐳 Run with Docker
 
 You can run the entire stack (frontend, backend, and database) with a single command through docker.
