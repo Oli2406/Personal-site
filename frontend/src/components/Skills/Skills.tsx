@@ -2,6 +2,7 @@ import './App.css'
 import React, {useEffect, useState} from "react";
 import {type Skill, SkillService} from "../../Service/SkillService.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
+import {Navigate} from "react-router-dom";
 
 function Skills() {
 
@@ -58,6 +59,10 @@ function Skills() {
             console.error("Failed to create skill:", err);
         }
     };
+
+    if(!isLoggedIn) {
+        return <Navigate to={"/login"} replace/>
+    }
 
     return (
         <div className="overflow-hidden">

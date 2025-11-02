@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export function About() {
 
-    const WEATHER_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+    const WEATHER_KEY = import.meta.env.VITE_WEATHER_API_KEY || "";
 
     const city = "Vienna";
 
@@ -49,7 +49,7 @@ export function About() {
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
                     <div className="flex-shrink-0 flex flex-col items-center md:items-center">
                         <img
-                            src="src/assets/selfie.jpeg"
+                            src="/selfie.jpeg"
                             alt="Oliver Kastner"
                             className="w-40 h-40 rounded-full border-4 border-indigo-400/50 shadow-lg object-cover hover:scale-105 transition-transform duration-300"
                         />

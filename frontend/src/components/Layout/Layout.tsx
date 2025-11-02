@@ -28,11 +28,24 @@ export default function Layout() {
                 )
                 }
                 <div className="flex items-center gap-4 text-sm">
-                    <button className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 transition">
-                        <NavLink to="/">Skills</NavLink>
-                    </button>
+                    {isLoggedIn ? (
+                        <button className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 transition">
+                            <NavLink to="/skills">Skills</NavLink>
+                        </button>
+                    ) : (
+                        <div></div>
+                    )}
+
+                    {isLoggedIn ? (
+                        <button className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 transition">
+                            <NavLink to="/chat">Chat</NavLink>
+                        </button>
+                    ) : (
+                        <div></div>
+                    )}
+
                     <button className="px-4 py-2 rounded-lg bg-pink-500 hover:bg-pink-600 transition">
-                        <NavLink to="/about">About</NavLink>
+                        <NavLink to="/">About</NavLink>
                     </button>
                     {isLoggedIn ? (
                         <button
