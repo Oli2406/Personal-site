@@ -71,41 +71,37 @@ export function About() {
 
                     <div className="text-center md:text-left space-y-4">
                         <p className="text-gray-300 leading-relaxed text-lg">
-                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-                            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-                            erat, sed diam voluptua. At vero eos et accusam et justo duo
-                            dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-                            sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-                            consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
-                            ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-                            eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-                            gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                            Hello, my name is Oliver Kastner. I am a Software Developer from Vienna Austria.
+                            I have a passion for web development and data visualization. Currently I am in taking the
+                            last course of my bachelors in Media Informatics and Visual Computing at TU Wien. This
+                            website acts as a personal project to improve my web development skills. You can find the
+                            Github Links to my other projects below.
                         </p>
 
                         <p className="text-gray-300 leading-relaxed text-lg">
-                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-                            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-                            erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-                            et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
-                            Lorem ipsum dolor sit amet.
+                            For this project the technologies I utilized are:
                         </p>
 
                         <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
-              <span className="px-4 py-2 bg-indigo-500/30 rounded-full border border-indigo-400/30 text-sm font-medium">
-                React & TypeScript
-              </span>
+                          <span className="px-4 py-2 bg-indigo-500/30 rounded-full border border-indigo-400/30 text-sm font-medium">
+                            React & TypeScript
+                          </span>
                             <span
                                 className="px-4 py-2 bg-purple-500/30 rounded-full border border-purple-400/30 text-sm font-medium">
-                Tailwind CSS
-              </span>
+                                Tailwind CSS
+                              </span>
                             <span
-                                className="px-4 py-2 bg-pink-500/30 rounded-full border border-pink-400/30 text-sm font-medium">
-                Java & Spring Boot
-              </span>
+                                className="px-4 py-2 bg-green-500/30 rounded-full border border-green-400/30 text-sm font-medium">
+                                Java & Spring Boot
+                              </span>
                             <span
                                 className="px-4 py-2 bg-blue-500/30 rounded-full border border-blue-400/30 text-sm font-medium">
-                REST APIs
-              </span>
+                                PostgreSQL
+                              </span>
+                            <span
+                                className="px-4 py-2 bg-pink-500/30 rounded-full border border-pink-400/30 text-sm font-medium">
+                                Git & Docker
+                                </span>
                         </div>
                     </div>
                 </div>
