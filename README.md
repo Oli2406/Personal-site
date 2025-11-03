@@ -4,15 +4,11 @@ This is my personal portfolio website which will be built to showcase my project
 
 ## 📸 Screenshots
 
-<img width="2560" height="1231" alt="image" src="https://github.com/user-attachments/assets/5c415d7f-a222-47eb-bd4c-501e5c9c2ae5" />
-<img width="2542" height="1235" alt="image" src="https://github.com/user-attachments/assets/ffd9304f-a7f1-4ede-9aa5-6ae0ef0742cb" />
-<img width="2540" height="1239" alt="image" src="https://github.com/user-attachments/assets/261b0a0a-4de8-47aa-9d1d-e24fc06bef23" />
-
 | Section | Screenshot |
 |----------|-------------|
-| 💬 **Chatroom Example** | ![Home Screenshot](<img width="2560" height="1231" alt="image" src="https://github.com/user-attachments/assets/5c415d7f-a222-47eb-bd4c-501e5c9c2ae5" />) |
-| 💡 **Skill Tracker** | ![Projects Screenshot](<img width="2542" height="1235" alt="image" src="https://github.com/user-attachments/assets/ffd9304f-a7f1-4ede-9aa5-6ae0ef0742cb" />) |
-| 👤 **About Section** | ![Chat Screenshot](<img width="2540" height="1239" alt="image" src="https://github.com/user-attachments/assets/261b0a0a-4de8-47aa-9d1d-e24fc06bef23" />) |
+| 💬 **Chatroom Example** | ![Home Screenshot](./showcaseScreenshots/chatroom_example.png) |
+| 💡 **Skill Tracker** | ![Projects Screenshot](./showcaseScreenshots/skills_example.png) |
+| 👤 **About Section** | ![Chat Screenshot](./showcaseScreenshots/about_example.png) |
 
 
 ---
