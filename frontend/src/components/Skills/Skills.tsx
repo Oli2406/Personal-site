@@ -1,4 +1,3 @@
-import './App.css'
 import React, {useEffect, useState} from "react";
 import {type Skill, SkillService} from "../../Service/SkillService.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
