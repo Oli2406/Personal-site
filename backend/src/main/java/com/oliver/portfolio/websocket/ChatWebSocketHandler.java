@@ -11,10 +11,13 @@ import com.oliver.portfolio.model.Message;
 import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.lang.invoke.MethodHandles;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -29,6 +32,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
   private final ObjectMapper mapper = new ObjectMapper();
   private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();;
   private final UserRepository userRepository;
+  
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   
   public ChatWebSocketHandler(JwtService jwtService,
                               ChatService chatService,
@@ -126,8 +132,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
       }
     }
-    
-    
   
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -141,12 +145,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
       participants.remove(session);
       if (participants.isEmpty()) rooms.remove(roomCode);
     }
-    
-    ChatRoom room = chatService.getOrCreate(roomCode);
-    Message leaveMsg = chatService.save("System", username + " left the room.", room);
-    
-    MessageDto leaveDto = new MessageDto(leaveMsg.getSender(), leaveMsg.getContent(), leaveMsg.getTimestamp());
-    broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", leaveDto));
   }
   
   private void broadcast(String roomCode, Map<String, Object> message) throws Exception {
