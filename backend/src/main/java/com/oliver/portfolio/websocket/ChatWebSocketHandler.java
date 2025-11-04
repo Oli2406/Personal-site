@@ -8,6 +8,9 @@ import com.oliver.portfolio.endpoint.dto.MessageDto;
 import com.oliver.portfolio.endpoint.dto.RoomInfoDto;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.Message;
+import com.oliver.portfolio.repository.ChatRoomMemberRepository;
+import com.oliver.portfolio.repository.ChatRoomRepository;
+import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.JwtService;
 import org.springframework.stereotype.Component;
@@ -26,9 +29,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
   private final ChatService chatService;
   private final JwtService jwtService;
   private final ObjectMapper mapper = new ObjectMapper();
-  private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();
+  private final Map<String, Set<WebSocketSession>> rooms = new ConcurrentHashMap<>();;
+  private final UserRepository userRepository;
   
-  public ChatWebSocketHandler(JwtService jwtService, ChatService chatService) {
+  public ChatWebSocketHandler(JwtService jwtService,
+                              ChatService chatService,
+                              UserRepository userRepository) {
     this.jwtService = jwtService;
     this.chatService = chatService;
     
@@ -36,6 +42,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     this.mapper.registerModule(new Jdk8Module());
     this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     this.mapper.findAndRegisterModules();
+    this.userRepository = userRepository;
   }
   
   @Override
@@ -70,9 +77,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     Map<String, Object> payload = Map.of("type", "ROOM_INFO", "data", roomInfo);
     session.sendMessage(new TextMessage(mapper.writeValueAsString(payload)));
     
-    Message joinMessage = chatService.save("System", username + " joined the room.", room);
-    MessageDto joinDto = new MessageDto(joinMessage.getSender(), joinMessage.getContent(), joinMessage.getTimestamp());
-    broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", joinDto));
+    boolean isUserAlreadyJoined = chatService.isUserInRoom(roomCode, username);
+    
+    if(!isUserAlreadyJoined) {
+      Message joinMessage = chatService.save("System", username + " joined the room.", room);
+      MessageDto joinDto = new MessageDto(joinMessage.getSender(), joinMessage.getContent(), joinMessage.getTimestamp());
+      broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", joinDto));
+      chatService.addUserToRoom(userRepository.findByUsername(username), room);
+    }
   }
   
   @Override
@@ -80,20 +92,44 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     Map<String, Object> msg = mapper.readValue(rawMessage.getPayload(), Map.class);
     String type = (String) msg.get("type");
     
-    if (!"MESSAGE".equals(type)) return;
+    if (type == null) return;
     
     String roomCode = (String) msg.get("room");
     String sender = (String) session.getAttributes().get("username");
     String content = (String) msg.get("content");
     
-    if (roomCode == null || sender == null || content == null || content.isBlank()) return;
+    switch (type) {
+      case "MESSAGE" -> {
+          if (roomCode == null || sender == null || content == null || content.isBlank()) return;
+          
+          ChatRoom room = chatService.getOrCreate(roomCode);
+          Message saved = chatService.save(sender, content, room);
+          
+          MessageDto dto = new MessageDto(saved.getSender(), saved.getContent(), saved.getTimestamp());
+          broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", dto));
+        }
+        case "LEAVE" -> {
+          ChatRoom room = chatService.getOrCreate(roomCode);
+          Set<WebSocketSession> participants = rooms.get(roomCode);
+          if(participants != null) {
+            participants.remove(session);
+          }
+          
+          chatService.removeUserFromRoom(userRepository.findByUsername(sender), room);
+          
+          Message leaveMessage = chatService.save("System", sender + " left the room", room);
+          MessageDto leaveDto = new MessageDto(
+              leaveMessage.getSender(), leaveMessage.getContent(), leaveMessage.getTimestamp()
+          );
+          
+          broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", leaveDto));
+          broadcast(roomCode, Map.of("type", "PARTICIPANTS_UPDATE", "participants", getUsernames(roomCode)));
+          session.close(CloseStatus.NORMAL);
+        }
+      }
+    }
     
-    ChatRoom room = chatService.getOrCreate(roomCode);
-    Message saved = chatService.save(sender, content, room);
     
-    MessageDto dto = new MessageDto(saved.getSender(), saved.getContent(), saved.getTimestamp());
-    broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", dto));
-  }
   
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

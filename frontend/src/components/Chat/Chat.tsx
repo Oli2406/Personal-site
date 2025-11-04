@@ -1,6 +1,7 @@
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
+import EmojiPicker from "emoji-picker-react";
 
 interface Message {
     sender: string;
@@ -17,6 +18,8 @@ interface Room {
 export default function Chat() {
     const { token, username, isLoggedIn } = useAuth();
 
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showRoomDetails ,setShowRoomDetails] = useState(false);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
     const [newRoomCode, setNewRoomCode] = useState("");
@@ -151,6 +154,39 @@ export default function Chat() {
         setMessage("");
     };
 
+    const leaveRoom = (code: string) => {
+        const socket = socketsRef.current[code]
+        if(!socket) return;
+
+        if(socket.readyState === WebSocket.OPEN) {
+            const leaveMsg = {
+                type: "LEAVE",
+                room: code,
+                sender: username,
+                content: ""
+            };
+            socket.send(JSON.stringify(leaveMsg))
+        }
+        socket.close();
+        delete socketsRef.current[code];
+
+        setRooms((prev) => prev.filter((r) => r.code !== code ));
+
+
+        const joinedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
+        localStorage.setItem(
+            "joinedRooms", JSON.stringify(joinedRooms.filter((r:string) => r !== code))
+        );
+
+        if(!currentRoom) return;
+
+        if(currentRoom?.code === code) {
+            setCurrentRoom(null);
+        }
+
+        setShowRoomDetails(false)
+    }
+
     if (!isLoggedIn || !token) {
         return <Navigate to="/login" replace />;
     }
@@ -161,7 +197,9 @@ export default function Chat() {
     return (
         <div className="flex h-[80vh] gap-4 p-4 text-gray-200">
             <div className="w-1/4 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 space-y-4">
-                <h2 className="text-xl font-semibold text-indigo-300">Chat Rooms</h2>
+                <h2 className="text-xl font-semibold text-indigo-300">
+                    Chat Rooms
+                </h2>
 
                 <form onSubmit={handleJoinRoom} className="flex gap-2">
                     <input
@@ -199,7 +237,8 @@ export default function Chat() {
             <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col">
                 {currentRoomData ? (
                     <>
-                        <div className="border-b border-white/10 p-3 flex justify-between">
+                        <div className="border-b border-white/10 p-3 flex justify-between"
+                             onClick={() => setShowRoomDetails(true)}>
                             <h2 className="text-xl font-semibold text-indigo-300">
                                 Room: {currentRoomData.code}
                             </h2>
@@ -234,6 +273,25 @@ export default function Chat() {
                             onSubmit={handleSendMessage}
                             className="p-3 border-t border-white/10 flex gap-2"
                         >
+                            <button
+                                type="button"
+                                onClick={() => setShowEmojiPicker((prev) => !prev)}
+                                className="p-2 bg-white/10 rounded-xl hover:bg-white/20"
+                                title="Add emoji"
+                            >
+                                😊
+                            </button>
+                            {showEmojiPicker && (
+                                <div className={"absolute bottom-14 left-3 z-50"}>
+                                    <EmojiPicker
+                                        onEmojiClick={(emojiObject) => {
+                                            setMessage((prev) => prev + emojiObject.emoji);
+                                            setShowEmojiPicker(false)
+                                        }}
+                                    />
+
+                                </div>
+                            )}
                             <input
                                 type="text"
                                 placeholder="Type your message..."
@@ -241,6 +299,7 @@ export default function Chat() {
                                 onChange={(e) => setMessage(e.target.value)}
                                 className="flex-1 p-2 rounded-xl bg-white/10 border border-white/20 focus:outline-none"
                             />
+
                             <button
                                 type="submit"
                                 className="px-4 py-2 bg-indigo-600 rounded-xl hover:bg-indigo-700"
@@ -255,6 +314,56 @@ export default function Chat() {
                     </div>
                 )}
             </div>
+            {showRoomDetails && currentRoomData && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-2xl w-[400px] shadow-xl border border-white/10">
+                        <h3 className="text-2xl font-semibold text-indigo-300 mb-4">
+                            Room Info
+                        </h3>
+
+                        <p className="text-gray-300 mb-2">
+                            <strong>Code:</strong> {currentRoomData.code}
+                        </p>
+
+                        <p className="text-gray-300 mb-2">
+                            <strong>Participants:</strong>{" "}
+                            {currentRoomData.participants.length}
+                        </p>
+
+                        <ul className="bg-white/5 rounded-lg p-2 mb-4 space-y-1 max-h-40 overflow-y-auto">
+                            {currentRoomData.participants.length > 0 ? (
+                                currentRoomData.participants.map((p, i) => (
+                                    <li key={i} className="text-gray-200">
+                                        {p}
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="text-gray-400 italic">No participants</li>
+                            )}
+                        </ul>
+
+                        <p className="text-gray-300 mb-4">
+                            <strong>Total Messages:</strong>{" "}
+                            {currentRoomData.messages.length}
+                        </p>
+
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setShowRoomDetails(false)}
+                                className="px-3 py-2 bg-gray-700 rounded-xl hover:bg-gray-600"
+                            >
+                                Close
+                            </button>
+                            <button
+                                onClick={() => leaveRoom(currentRoomData.code)}
+                                className="px-3 py-2 bg-red-600 rounded-xl hover:bg-red-700"
+                            >
+                                Leave Room
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

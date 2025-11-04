@@ -1,28 +1,37 @@
 package com.oliver.portfolio.service.impl;
 
 import com.oliver.portfolio.model.ChatRoom;
+import com.oliver.portfolio.model.ChatRoomMember;
 import com.oliver.portfolio.model.Message;
+import com.oliver.portfolio.model.User;
+import com.oliver.portfolio.repository.ChatRoomMemberRepository;
 import com.oliver.portfolio.repository.ChatRoomRepository;
 import com.oliver.portfolio.repository.MessageRepository;
 import com.oliver.portfolio.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.List;
 
 @Service
 public class ChatServiceImpl implements ChatService {
   private ChatRoomRepository chatRoomRepository;
   private MessageRepository messageRepository;
+  private ChatRoomMemberRepository chatRoomMemberRepository;
   
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   
-  public ChatServiceImpl(ChatRoomRepository chatRoomRepository, MessageRepository messageRepository) {
+  public ChatServiceImpl(ChatRoomRepository chatRoomRepository,
+                         MessageRepository messageRepository,
+                         ChatRoomMemberRepository chatRoomMemberRepository) {
     this.chatRoomRepository = chatRoomRepository;
     this.messageRepository = messageRepository;
+    this.chatRoomMemberRepository = chatRoomMemberRepository;
   }
   
   @Override
@@ -44,4 +53,31 @@ public class ChatServiceImpl implements ChatService {
     return messageRepository.findByRoomOrderByTimestampAsc(chatRoom);
   }
   
+  @Override
+  public boolean isUserInRoom(String roomCode, String username) {
+    LOGGER.info("Checking if user {} is a in room {}", username, roomCode);
+    LOGGER.info("Checking if user {} is in room {}", username, roomCode);
+    return chatRoomMemberRepository.findByRoom_CodeAndUser_Username(roomCode, username).isPresent();
+  }
+  
+  @Override
+  @Transactional
+  public void addUserToRoom(User user, ChatRoom room) {
+    LOGGER.info("Adding user {} to room {}", user, room);
+    chatRoomMemberRepository.findByRoom_CodeAndUser_Username(room.getCode(), user.getUsername())
+        .orElseGet(() -> chatRoomMemberRepository.save(
+            new ChatRoomMember(room,
+                               user,
+                               Instant.now(),
+                               ChatRoomMember.MembershipStatus.ACTIVE)
+            )
+        );
+  }
+  
+  @Override
+  @Transactional
+  public void removeUserFromRoom(User user, ChatRoom room) {
+    LOGGER.info("Removing user {} from room {}", user.getUsername(), room);
+    chatRoomMemberRepository.deleteByRoom_CodeAndUser_Username(room.getCode(), user.getUsername());
+  }
 }
