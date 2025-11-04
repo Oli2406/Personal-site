@@ -8,8 +8,6 @@ import com.oliver.portfolio.endpoint.dto.MessageDto;
 import com.oliver.portfolio.endpoint.dto.RoomInfoDto;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.Message;
-import com.oliver.portfolio.repository.ChatRoomMemberRepository;
-import com.oliver.portfolio.repository.ChatRoomRepository;
 import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.JwtService;
@@ -69,7 +67,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     ChatRoom room = chatService.getOrCreate(roomCode);
     rooms.computeIfAbsent(roomCode, k -> Collections.synchronizedSet(new HashSet<>())).add(session);
     
-    List<MessageDto> history = chatService.getMessages(room).stream()
+    List<MessageDto> history = chatService.getMessageAfterJoin(room, username).stream()
         .map(m -> new MessageDto(m.getSender(), m.getContent(), m.getTimestamp()))
         .collect(Collectors.toList());
     

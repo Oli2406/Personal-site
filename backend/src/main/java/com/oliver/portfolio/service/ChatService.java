@@ -11,11 +11,13 @@ public interface ChatService {
   
   Message save(String sender, String content, ChatRoom chatRoom);
   
-  List<Message> getMessages(ChatRoom chatRoom);
-  
   boolean isUserInRoom(String roomCode, String username);
   
   void addUserToRoom(User user, ChatRoom room);
   
   void removeUserFromRoom(User user, ChatRoom room);
+  
+  List<String> getJoinedRooms(String username);
+  
+  List<Message> getMessageAfterJoin(ChatRoom room, String username);
 }

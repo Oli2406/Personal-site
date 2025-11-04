@@ -155,6 +155,10 @@ export default function Chat() {
     };
 
     const leaveRoom = (code: string) => {
+        if (!token) {
+            console.error("Missing token — cannot leave room.");
+            return;
+        }
         const socket = socketsRef.current[code]
         if(!socket) return;
 

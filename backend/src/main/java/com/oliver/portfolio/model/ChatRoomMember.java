@@ -61,4 +61,12 @@ public class ChatRoomMember {
     this.lastSeen = lastSeen;
     this.status = status;
   }
+  
+  public Instant getJoinedAt() {
+    return joinedAt;
+  }
+  
+  public void setJoinedAt(Instant joinedAt) {
+    this.joinedAt = joinedAt;
+  }
 }

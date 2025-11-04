@@ -48,12 +48,6 @@ public class ChatServiceImpl implements ChatService {
   }
   
   @Override
-  public List<Message> getMessages(ChatRoom chatRoom) {
-    LOGGER.info("Getting messages from chat room {}", chatRoom);
-    return messageRepository.findByRoomOrderByTimestampAsc(chatRoom);
-  }
-  
-  @Override
   public boolean isUserInRoom(String roomCode, String username) {
     LOGGER.info("Checking if user {} is a in room {}", username, roomCode);
     LOGGER.info("Checking if user {} is in room {}", username, roomCode);
@@ -79,5 +73,21 @@ public class ChatServiceImpl implements ChatService {
   public void removeUserFromRoom(User user, ChatRoom room) {
     LOGGER.info("Removing user {} from room {}", user.getUsername(), room);
     chatRoomMemberRepository.deleteByRoom_CodeAndUser_Username(room.getCode(), user.getUsername());
+  }
+  
+  @Override
+  public List<String> getJoinedRooms(String username) {
+    LOGGER.info("Getting joined rooms for {}", username);
+    List<String> rooms = chatRoomMemberRepository.findAllByUser_Username(username)
+        .stream()
+        .map(chatRoomMember -> chatRoomMember.getRoom().getCode())
+        .toList();
+    return rooms;
+  }
+  
+  @Override
+  public List<Message> getMessageAfterJoin(ChatRoom room, String username) {
+    LOGGER.info("Getting messages after joining room {}", room);
+    return messageRepository.findMessagesAfterUserJoined(room, username);
   }
 }
