@@ -28,16 +28,31 @@ export default function Chat() {
     const socketsRef = useRef<Record<string, WebSocket>>({});
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+
     useEffect(() => {
-        const storedRooms = JSON.parse(localStorage.getItem("joinedRooms") || "[]");
-        setRooms(
-            storedRooms.map((code: string) => ({
-                code,
-                participants: [],
-                messages: [],
-            }))
-        );
-    }, []);
+        if(!token) return;
+        const fetchRooms = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/chat/rooms`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                if(!res.ok) throw new Error(res.statusText);
+                const roomCodes: string[] = await res.json();
+                setRooms(roomCodes.map((code) => ({
+                    code,
+                    participants: [],
+                    messages: []
+                })));
+            } catch (err) {
+                console.error("Error fetching joined rooms: ", err);
+            }
+        }
+
+        fetchRooms();
+    }, [token]);
 
     useEffect(() => {
         return () => {

@@ -24,6 +24,7 @@ public class ChatEndpoint {
   
   public static final String BASE_PATH = "/api/chat";
   
+  
   public ChatEndpoint(final ChatService chatService, final JwtService jwtService) {
     this.chatService = chatService;
     this.jwtService = jwtService;
@@ -31,6 +32,7 @@ public class ChatEndpoint {
   
   @GetMapping("/rooms")
   public ResponseEntity<List<String>> getJoinedRooms(@RequestHeader("Authorization") String authHeader) {
+    LOGGER.info("Getting joined rooms");
     String token = authHeader.replace("Bearer ", "");
     String username = jwtService.extractUsername(token);
     
