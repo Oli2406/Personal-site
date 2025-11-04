@@ -60,6 +60,42 @@ You can run the entire stack (frontend, backend, and database) with a single com
    ```bash
    docker compose down
    ```
+   ---
+
+## ☸️ Run with Docker Desktop & Kubernetes
+
+If you have **Docker Desktop** with **Kubernetes enabled**, you can deploy the entire stack and automatically rebuild it with a single click.
+
+### 🔹 Requirements
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) with Kubernetes enabled  
+- [Git](https://git-scm.com/) (for Git Bash)
+
+### 🔹 Quick Start
+
+1. **Double-click** the file:
+   ```bash
+   redeploy.bat
+   ```
+
+   This script will:
+   - Rebuild all Docker images (`frontend`, `backend`, `postgres`)
+   - Recreate running containers
+   - Restart Kubernetes deployments
+   - Wait until the rollout completes successfully
+
+2. Wait for the terminal to display:
+   ```
+   ✅ Redeployment complete!
+   ```
+
+3. Open your browser:
+   ```
+   http://frontend.localhost
+   ```
+
+NOTE: This is still a work in progress and not all features work while deployed.
+
+---
 
 ## ⚙️ Technologies Used
 
