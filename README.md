@@ -27,40 +27,7 @@ Here are some of the main features included (or planned):
 | 🗃️ **Database Integration** | PostgreSQL backend with persistent storage for messages, accounts, chatrooms and skills. |
 | 🎨 **Modern UI** | Built with TailwindCSS for a sleek and responsive design. |
 
----
-
-
-## 🐳 Run with Docker
-
-You can run the entire stack (frontend, backend, and database) with a single command through docker.
-
-### 🔹 Requirements
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Git](https://git-scm.com/)
-
-### 🔹 Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Oli2406/Personal-site.git
-   cd Personal-site
-    ```
-
-2. **Build and start all services (must be in the project root)**
-   ```bash
-   docker compose up --build
-   ```
-
-3. **Access the application**
-   - 🌐 **Frontend (React App):** [http://localhost:5173](http://localhost:5173)  
-   - ⚙️ **Backend (Spring Boot API):** [http://localhost:8080](http://localhost:8080)  
-   - 🐘 **PostgreSQL Database:** exposed on port `5433`
-
-4. **Stop all containers**
-   ```bash
-   docker compose down
-   ```
-   ---
+--- 
 
 ## ☸️ Run with Docker Desktop & Kubernetes
 
@@ -94,6 +61,59 @@ If you have **Docker Desktop** with **Kubernetes enabled**, you can deploy the e
    ```
 
 NOTE: This is still a work in progress and not all features work while deployed.
+
+---
+
+## 🧠 Run Locally
+
+If you wish to run the stack locally follow these steps:
+
+## 🔹 Requirements
+- [Java 21+](https://adoptium.net/)
+- [Maven 3.9+](https://maven.apache.org/install.html)
+- [Node.js 10+ and npm](https://nodejs.org/)
+
+---
+
+## ⚙️ 1. Run the Backend
+
+1. Open a terminal in the backend folder:
+   ```bash
+   cd backend
+   ```
+2. Build and start the Spring Boot application:
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+The backend will automatically connect to the configured PostgreSQL database  
+and start on **http://localhost:8080**.
+
+---
+
+## 🎨 2. Run the Frontend
+
+1. Open a new terminal in the frontend folder:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The frontend will be available at **http://localhost:5202** and will automatically connect to the backend.
+
+---
+
+✅ You now have both servers running locally:
+- **Frontend:** http://localhost:5202  
+- **Backend:** http://localhost:8080  
 
 ---
 
