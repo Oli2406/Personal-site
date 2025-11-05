@@ -16,8 +16,15 @@ public class CorsConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(List.of(
         "http://localhost:5173",
-        "http://frontend.localhost/")
+        "http://localhost:5202",
+        "http://frontend.localhost")
     );
+    config.setAllowedOriginPatterns(List.of(
+        "http://frontend.localhost",
+        "http://backend.localhost",
+        "http://localhost:*",
+        "https://*.localhost"
+    ));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     config.setAllowCredentials(true);

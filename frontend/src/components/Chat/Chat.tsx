@@ -29,6 +29,7 @@ export default function Chat() {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+    const SOCKET_BASE_URL = import.meta.env.VITE_SOCKET_BASE_URL || "ws://localhost:8080";
 
     useEffect(() => {
         if(!token) return;
@@ -79,7 +80,7 @@ export default function Chat() {
         }
 
         const ws = new WebSocket(
-            `ws://localhost:8080/ws/chat?room=${code}&token=${encodeURIComponent(token)}`
+            `${SOCKET_BASE_URL}/ws/chat?room=${code}&token=${encodeURIComponent(token)}`
         );
         socketsRef.current[code] = ws;
 
@@ -137,6 +138,8 @@ export default function Chat() {
         ws.onerror = (err) => console.error("WebSocket error:", err);
 
         setCurrentRoom({ code, participants: [], messages: [] });
+
+        console.log(API_BASE_URL)
     };
 
     const handleJoinRoom = (e: React.FormEvent) => {

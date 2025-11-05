@@ -21,10 +21,12 @@ export default function RegisterPage() {
         repeatPassword: ""
     })
 
+    const debug = import.meta.env.VITE_API_BASE_URL
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Trim values locally
+        console.log(debug)
         const username = newUser.username.trim();
         const password = newUser.password.trim();
         const repeated = repeatPassword.repeatPassword.trim();
