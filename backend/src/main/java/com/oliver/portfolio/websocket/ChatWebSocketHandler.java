@@ -8,14 +8,18 @@ import com.oliver.portfolio.endpoint.dto.MessageDto;
 import com.oliver.portfolio.endpoint.dto.RoomInfoDto;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.Message;
+import com.oliver.portfolio.repository.ChatRoomMemberRepository;
+import com.oliver.portfolio.repository.ChatRoomRepository;
 import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import com.oliver.portfolio.model.ChatRoom;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URLDecoder;
@@ -35,10 +39,12 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
   
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private final ChatRoomRepository chatRoomRepository;
+  private final ChatRoomMemberRepository chatRoomMemberRepository;
   
   public ChatWebSocketHandler(JwtService jwtService,
                               ChatService chatService,
-                              UserRepository userRepository) {
+                              UserRepository userRepository, ChatRoomRepository chatRoomRepository, ChatRoomMemberRepository chatRoomMemberRepository) {
     this.jwtService = jwtService;
     this.chatService = chatService;
     
@@ -47,6 +53,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     this.mapper.findAndRegisterModules();
     this.userRepository = userRepository;
+    this.chatRoomRepository = chatRoomRepository;
+    this.chatRoomMemberRepository = chatRoomMemberRepository;
   }
   
   @Override
@@ -160,15 +168,13 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
   }
   
   private List<String> getUsernames(String roomCode) {
-    Set<WebSocketSession> participants = rooms.getOrDefault(roomCode, Collections.emptySet());
-    List<String> usernames = new ArrayList<>();
-    synchronized (participants) {
-      for (WebSocketSession s : participants) {
-        Object name = s.getAttributes().get("username");
-        if (name != null) usernames.add(name.toString());
-      }
-    }
-    return usernames;
+    ChatRoom room = chatRoomRepository.findByCode(roomCode)
+        .orElseThrow(() -> new RuntimeException("Room not found"));
+    
+    return chatRoomMemberRepository.findAllByRoom(room)
+        .stream()
+        .map(member -> member.getUser().getUsername())
+        .toList();
   }
   
   private String getQueryParam(WebSocketSession session, String key) {
