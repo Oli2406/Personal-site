@@ -259,10 +259,11 @@ export default function Chat() {
             <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col">
                 {currentRoomData ? (
                     <>
-                        <div className="border-b border-white/10 p-3 flex justify-between"
-                             onClick={() => setShowRoomDetails(true)}>
-                            <h2 className="text-xl font-semibold text-indigo-300">
+                        <div className="border-b border-white/10 p-3 flex justify-between">
+                            <h2 className="text-xl font-semibold text-indigo-300 hover:scale-110 transition duration-200"
+                                onClick={() => setShowRoomDetails(true)}>
                                 Room: {currentRoomData.code}
+
                             </h2>
                             <p className="text-sm text-gray-400">
                                 Participants: {(currentRoomData.participants ?? []).join(", ") || "None"}
@@ -273,7 +274,7 @@ export default function Chat() {
                             {currentRoomData.messages.map((msg, i) => (
                                 <div
                                     key={i}
-                                    className={`p-3 rounded-xl max-w-[70%] ${
+                                    className={`justify-center break-all p-3 rounded-xl max-w-[70%] ${
                                         msg.sender === username
                                             ? "ml-auto bg-indigo-600"
                                             : "bg-white/20"
