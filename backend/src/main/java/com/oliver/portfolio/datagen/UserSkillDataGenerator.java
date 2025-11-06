@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,24 +20,25 @@ import java.util.Random;
 
 @Component
 @Profile("dev")
-public class DataGenerator implements CommandLineRunner {
+@Order(1)
+public class UserSkillDataGenerator implements CommandLineRunner {
   
-  private static final Logger LOGGER = LoggerFactory.getLogger(DataGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserSkillDataGenerator.class);
   
   private final UserRepository userRepository;
   private final SkillRepository skillRepository;
   private final PasswordEncoder passwordEncoder;
   private static final Random random = new Random();
   
-  public DataGenerator(UserRepository userRepository,
-                       SkillRepository skillRepository,
-                       PasswordEncoder passwordEncoder) {
+  public UserSkillDataGenerator(UserRepository userRepository,
+                                SkillRepository skillRepository,
+                                PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.skillRepository = skillRepository;
     this.passwordEncoder = passwordEncoder;
   }
   
-  private static List<String> USERNAMES = List.of(
+  private static final List<String> USERNAMES = List.of(
       "oliver.dev",
       "sara.codes",
       "ethan.js",
