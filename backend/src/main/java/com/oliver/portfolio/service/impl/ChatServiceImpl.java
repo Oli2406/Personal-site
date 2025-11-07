@@ -1,5 +1,6 @@
 package com.oliver.portfolio.service.impl;
 
+import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.ChatRoomMember;
 import com.oliver.portfolio.model.Message;
@@ -8,6 +9,7 @@ import com.oliver.portfolio.repository.ChatRoomMemberRepository;
 import com.oliver.portfolio.repository.ChatRoomRepository;
 import com.oliver.portfolio.repository.MessageRepository;
 import com.oliver.portfolio.service.ChatService;
+import com.oliver.portfolio.service.validator.MessageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,19 @@ public class ChatServiceImpl implements ChatService {
   private ChatRoomRepository chatRoomRepository;
   private MessageRepository messageRepository;
   private ChatRoomMemberRepository chatRoomMemberRepository;
+  private MessageValidator messageValidator;
   
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   
   public ChatServiceImpl(ChatRoomRepository chatRoomRepository,
                          MessageRepository messageRepository,
-                         ChatRoomMemberRepository chatRoomMemberRepository) {
+                         ChatRoomMemberRepository chatRoomMemberRepository,
+                         MessageValidator messageValidator) {
     this.chatRoomRepository = chatRoomRepository;
     this.messageRepository = messageRepository;
     this.chatRoomMemberRepository = chatRoomMemberRepository;
+    this.messageValidator = messageValidator;
   }
   
   @Override
@@ -42,8 +47,9 @@ public class ChatServiceImpl implements ChatService {
   }
   
   @Override
-  public Message save(String sender, String content, ChatRoom chatRoom) {
+  public Message save(String sender, String content, ChatRoom chatRoom) throws ValidationException {
     LOGGER.info("Saving chat room {}", chatRoom);
+    messageValidator.validateMessage(new Message(sender, content, chatRoom));
     return messageRepository.save(new Message(sender, content, chatRoom));
   }
   

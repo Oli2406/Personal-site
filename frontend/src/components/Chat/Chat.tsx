@@ -2,6 +2,7 @@ import { useAuth } from "../../contexts/AuthContext.tsx";
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import EmojiPicker from "emoji-picker-react";
+import {toast} from "react-toastify";
 
 interface Message {
     sender: string;
@@ -125,6 +126,8 @@ export default function Chat() {
                                 : r
                         )
                     );
+                } else if (data.type === "ERROR") {
+                    toast.error(data.message.substring(1, data.message.length - 1) || "An unknown error occured");
                 }
             } catch (err) {
                 console.error("Error parsing WebSocket message:", err);

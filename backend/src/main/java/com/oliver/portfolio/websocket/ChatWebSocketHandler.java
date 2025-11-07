@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.oliver.portfolio.endpoint.dto.MessageDto;
 import com.oliver.portfolio.endpoint.dto.RoomInfoDto;
+import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.Message;
 import com.oliver.portfolio.repository.ChatRoomMemberRepository;
@@ -16,10 +17,8 @@ import com.oliver.portfolio.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import com.oliver.portfolio.model.ChatRoom;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URLDecoder;
@@ -101,21 +100,22 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
   
   @Override
   public void handleTextMessage(WebSocketSession session, TextMessage rawMessage) throws Exception {
-    Map<String, Object> msg = mapper.readValue(rawMessage.getPayload(), Map.class);
-    String type = (String) msg.get("type");
-    
-    if (type == null) return;
-    
-    String roomCode = (String) msg.get("room");
-    String sender = (String) session.getAttributes().get("username");
-    String content = (String) msg.get("content");
-    
-    switch (type) {
-      case "MESSAGE" -> {
+    try {
+      Map<String, Object> msg = mapper.readValue(rawMessage.getPayload(), Map.class);
+      String type = (String) msg.get("type");
+      
+      if (type == null) return;
+      
+      String roomCode = (String) msg.get("room");
+      String sender = (String) session.getAttributes().get("username");
+      String content = (String) msg.get("content");
+      
+      switch (type) {
+        case "MESSAGE" -> {
           if (roomCode == null || sender == null || content == null || content.isBlank()) return;
           
           ChatRoom room = chatService.getOrCreate(roomCode);
-          Message saved = chatService.save(sender, content, room);
+          Message saved = chatService.save(sender, content, room); // may throw ValidationException
           
           MessageDto dto = new MessageDto(saved.getSender(), saved.getContent(), saved.getTimestamp());
           broadcast(roomCode, Map.of("type", "NEW_MESSAGE", "message", dto));
@@ -123,7 +123,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         case "LEAVE" -> {
           ChatRoom room = chatService.getOrCreate(roomCode);
           Set<WebSocketSession> participants = rooms.get(roomCode);
-          if(participants != null) {
+          if (participants != null) {
             participants.remove(session);
           }
           
@@ -139,12 +139,20 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
           session.close(CloseStatus.NORMAL);
         }
       }
+      
+    } catch (ValidationException e) {
+      LOGGER.warn("Validation error: {}", e.getErrors());
+      sendError(session, String.join(", ", e.getErrors()));
+    } catch (Exception e) {
+      LOGGER.error("Error handling WebSocket message", e);
+      sendError(session, "Unexpected error: " + e.getMessage());
     }
+  }
+  
   
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
     String roomCode = (String) session.getAttributes().get("room");
-    String username = (String) session.getAttributes().get("username");
     
     if (roomCode == null) return;
     
@@ -188,5 +196,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
       }
     }
     return null;
+  }
+  
+  private void sendError(WebSocketSession session, String errorMessage) {
+    try {
+      Map<String, Object> payload = Map.of(
+          "type", "ERROR",
+          "message", errorMessage
+      );
+      session.sendMessage(new TextMessage(mapper.writeValueAsString(payload)));
+    } catch (Exception ex) {
+      LOGGER.error("Failed to send error message to client", ex);
+    }
   }
 }
