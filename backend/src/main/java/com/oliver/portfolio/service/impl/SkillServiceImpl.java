@@ -67,7 +67,6 @@ public class SkillServiceImpl implements SkillService {
     skillToSave.addProgress(progressToSave);
     
     Skill saved = skillRepository.save(skillToSave);
-    skillProgressRepository.save(progressToSave);
     return new SkillDetailDto(saved, user);
   }
   

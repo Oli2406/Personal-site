@@ -11,5 +11,5 @@ public interface SkillProgressService {
   
   SkillProgress save(SkillDetailDto skill, User user);
   
-  List<SkillProgressDto> getAllUpdatesById(Long id);
+  List<SkillProgressDto> getAllUpdatesBySkill(Long userId, int skillId);
 }

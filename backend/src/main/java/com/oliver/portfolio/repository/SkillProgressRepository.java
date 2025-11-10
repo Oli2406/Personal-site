@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface SkillProgressRepository extends JpaRepository<SkillProgress, Long> {
   
-  List<SkillProgress> findAllByUser_Id(Long userId);
+  List<SkillProgress> findAllByUser_IdAndSkill_Id(Long user_id, int skill_id);
   
 }

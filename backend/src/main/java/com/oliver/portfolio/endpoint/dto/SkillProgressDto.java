@@ -1,16 +1,20 @@
 package com.oliver.portfolio.endpoint.dto;
 
+import java.time.LocalDateTime;
+
 public class SkillProgressDto {
   private Long id;
   private String name;
   private String description;
   private int level;
+  private LocalDateTime createdAt;
   
-  public SkillProgressDto(Long id, String name, String description, int level) {
+  public SkillProgressDto(Long id, String name, String description, int level, LocalDateTime createdAt) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.level = level;
+    this.createdAt = createdAt;
   }
   
   public SkillProgressDto() {}
@@ -45,5 +49,13 @@ public class SkillProgressDto {
   
   public void setLevel(int level) {
     this.level = level;
+  }
+  
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+  
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

@@ -7,9 +7,7 @@ import com.oliver.portfolio.model.SkillProgress;
 import com.oliver.portfolio.model.User;
 import com.oliver.portfolio.repository.SkillProgressRepository;
 import com.oliver.portfolio.repository.SkillRepository;
-import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.SkillProgressService;
-import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,15 +48,16 @@ public class SkillProgressServiceImpl implements SkillProgressService {
   }
   
   @Override
-  public List<SkillProgressDto> getAllUpdatesById(Long id) {
-    LOGGER.info("Getting all SkillProgress updates for id {}", id);
-    List<SkillProgress> skills = skillProgressRepository.findAllByUser_Id(id);
+  public List<SkillProgressDto> getAllUpdatesBySkill(Long userId, int skillId) {
+    LOGGER.info("Getting all SkillProgress updates for userId {} and skillId: {}", userId, skillId);
+    List<SkillProgress> skills = skillProgressRepository.findAllByUser_IdAndSkill_Id(userId, skillId);
     return skills.stream()
         .map(skillProgress -> new SkillProgressDto(
             skillProgress.getId(),
             skillProgress.getSkill().getName(),
             skillProgress.getNote(),
-            skillProgress.getLevel()
+            skillProgress.getLevel(),
+            skillProgress.getTimestamp()
         ))
         .collect(Collectors.toList());
   }

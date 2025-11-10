@@ -2,14 +2,17 @@ package com.oliver.portfolio.endpoint;
 
 import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
 import com.oliver.portfolio.endpoint.dto.SkillProgressDto;
+import com.oliver.portfolio.model.Skill;
 import com.oliver.portfolio.model.SkillProgress;
 import com.oliver.portfolio.model.User;
+import com.oliver.portfolio.repository.SkillRepository;
 import com.oliver.portfolio.repository.UserRepository;
 import com.oliver.portfolio.service.SkillProgressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,34 +21,37 @@ import org.springframework.security.core.Authentication;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(SkillProgressEndpoint.BASE_PATH)
 public class SkillProgressEndpoint {
   
   public static final String BASE_PATH = "/api/skillProgress";
+  private final SkillRepository skillRepository;
   
   private UserRepository userRepository;
   private SkillProgressService skillProgressService;
   
   
   public SkillProgressEndpoint(UserRepository userRepository,
-                               SkillProgressService skillProgressService) {
+                               SkillProgressService skillProgressService, SkillRepository skillRepository) {
     this.userRepository = userRepository;
     this.skillProgressService = skillProgressService;
+    this.skillRepository = skillRepository;
   }
   
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   
-  @GetMapping
-  public ResponseEntity<List<SkillProgressDto>> getSkillProgress(Authentication authentication) {
+  @GetMapping("/{skillId}")
+  public ResponseEntity<List<SkillProgressDto>> getSkillProgress(@PathVariable Long skillId, Authentication authentication) {
     String username = authentication.getName();
     User user = userRepository.findByUsername(username);
+    Skill skill = skillRepository.findById(skillId).get();
     
-    LOGGER.info("GET: " + BASE_PATH + "/" + user.getId());
-    
-    return ResponseEntity.ok(skillProgressService.getAllUpdatesById(user.getId()));
+    LOGGER.info("GET: " + BASE_PATH + "/{}", user.getId());
+    return ResponseEntity.ok(skillProgressService.getAllUpdatesBySkill(user.getId(), skill.getId()));
   }
   
   @PostMapping
@@ -64,8 +70,9 @@ public class SkillProgressEndpoint {
         saved.getId(),
         saved.getSkill().getName(),
         saved.getNote(),
-        saved.getLevel()
-    );
+        saved.getLevel(),
+        saved.getTimestamp()
+        );
     
     return ResponseEntity.ok(dto);
   }

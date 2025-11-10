@@ -20,5 +20,18 @@ export const SkillProgressService = {
 
         if(!response.ok) throw new Error(response.statusText);
         return response.json();
-    }
+    },
+
+    async getBySkill(skillId: number, token?: string | null): Promise<{ progress: number; createdAt: string }[]> {
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        const response = await fetch(`${API_BASE_URL}/skillProgress/${skillId}`, {
+            method: "GET",
+            headers,
+        });
+
+        if (!response.ok) throw new Error(response.statusText);
+        return response.json();
+    },
 }
