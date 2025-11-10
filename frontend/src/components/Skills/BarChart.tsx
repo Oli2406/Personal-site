@@ -36,9 +36,12 @@ const SkillChart: React.FC<SkillChartProps> = ({ skills }) => (
                     color: "#fff",
                 }}
             />
-            <Bar dataKey="level" fill="#6366f1" radius={[0, 10, 10, 0]} />
+            <Bar
+                dataKey="level"
+                fill="#6366f1"
+                radius={[0, 10, 10, 0]}
+            />
         </BarChart>
-
     </ResponsiveContainer>
 );
 

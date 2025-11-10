@@ -3,6 +3,9 @@ package com.oliver.portfolio.model;
 import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Skill {
   
@@ -17,6 +20,9 @@ public class Skill {
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
+  
+  @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<SkillProgress> progressHistory = new ArrayList<>();
   
   public Skill() {
   }
@@ -66,6 +72,15 @@ public class Skill {
   
   public void setUser(User user) {
     this.user = user;
+  }
+  
+  public List<SkillProgress> getProgressHistory() {
+    return progressHistory;
+  }
+  
+  public void addProgress(SkillProgress progress) {
+    progressHistory.add(progress);
+    progress.setSkill(this);
   }
   
   public SkillDetailDto skillDetailDtoToEntity(Skill skill, User user) {

@@ -3,6 +3,7 @@ import {type Skill, SkillService} from "../../Service/SkillService.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {Navigate} from "react-router-dom";
 import BarChart from "./BarChart";
+import {SkillProgressService} from "../../Service/SkillProgressService.ts";
 
 function Skills() {
 
@@ -51,6 +52,7 @@ function Skills() {
             if(!token) return;
             if(token && isLoggedIn) {
                 const created = await SkillService.create(newSkill, token);
+                await SkillProgressService.create(newSkill, token)
                 setSkills([...skills, created]);
                 setNewSkill({ id: 0, name: "", description: "", progress: 0 });
                 setShowMenu(false);
