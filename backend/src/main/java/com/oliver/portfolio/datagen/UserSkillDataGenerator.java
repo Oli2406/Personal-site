@@ -2,7 +2,9 @@ package com.oliver.portfolio.datagen;
 
 import com.oliver.portfolio.enums.Role;
 import com.oliver.portfolio.model.Skill;
+import com.oliver.portfolio.model.SkillProgress;
 import com.oliver.portfolio.model.User;
+import com.oliver.portfolio.repository.SkillProgressRepository;
 import com.oliver.portfolio.repository.SkillRepository;
 import com.oliver.portfolio.repository.UserRepository;
 import org.slf4j.Logger;
@@ -28,14 +30,17 @@ public class UserSkillDataGenerator implements CommandLineRunner {
   private final UserRepository userRepository;
   private final SkillRepository skillRepository;
   private final PasswordEncoder passwordEncoder;
+  private final SkillProgressRepository skillProgressRepository;
   private static final Random random = new Random();
   
   public UserSkillDataGenerator(UserRepository userRepository,
                                 SkillRepository skillRepository,
-                                PasswordEncoder passwordEncoder) {
+                                PasswordEncoder passwordEncoder,
+                                SkillProgressRepository skillProgressRepository) {
     this.userRepository = userRepository;
     this.skillRepository = skillRepository;
     this.passwordEncoder = passwordEncoder;
+    this.skillProgressRepository = skillProgressRepository;
   }
   
   private static final List<String> USERNAMES = List.of(
@@ -196,19 +201,32 @@ public class UserSkillDataGenerator implements CommandLineRunner {
     LOGGER.info("Created {} users (2 admins, 8 regular).", users.size());
     
     List<Skill> allSkills = new ArrayList<>();
+    List<SkillProgress> allProgress = new ArrayList<>();
     for (User user : users) {
       for (int i = 0; i < 10; i++) {
+        int lastProgress = random.nextInt(101);
         Pair<String, String> skillInfo = randomSkill();
         Skill skill = new Skill();
         skill.setName(skillInfo.getLeft());
         skill.setDescription(skillInfo.getRight());
-        skill.setProgress(random.nextInt(101));
+        skill.setProgress(lastProgress);
         skill.setUser(user);
         allSkills.add(skill);
+        for(int j = 0; j < 10; j++) {
+          int progress = j == 9 ? lastProgress : random.nextInt(101);
+          SkillProgress skillProgress = new SkillProgress(
+              skill,
+              user,
+              progress,
+              "pre generated note: " + j
+          );
+          allProgress.add(skillProgress);
+        }
       }
     }
     
     skillRepository.saveAll(allSkills);
+    skillProgressRepository.saveAll(allProgress);
     LOGGER.info("Created {} skills (10 per user).", allSkills.size());
   }
 }

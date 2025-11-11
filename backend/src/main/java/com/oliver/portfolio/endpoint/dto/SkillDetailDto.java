@@ -44,7 +44,7 @@ public class SkillDetailDto {
     this.description = description;
   }
   
-  public int getId() {
+  public long getId() {
     return id;
   }
   

@@ -11,7 +11,7 @@ import {
 
 export interface ProgressPoint {
     progress: number;
-    createdAt: string;
+    createdAt: Date;
 }
 
 interface LineChartProgressProps {
@@ -25,7 +25,6 @@ const LineChartProgress: React.FC<LineChartProgressProps> = ({
                                                                  title = "Progress Over Time",
                                                                  color = "#6366f1",
                                                              }) => {
-    // 🔁 trigger a resize after render (important in grids/flex)
     useEffect(() => {
         const timeout = setTimeout(() => {
             window.dispatchEvent(new Event("resize"));
@@ -53,11 +52,29 @@ const LineChartProgress: React.FC<LineChartProgressProps> = ({
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
                         <XAxis
                             dataKey="createdAt"
+                            tickFormatter={(value) =>
+                                new Date(value).toLocaleDateString([], {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric"
+                                })
+                            }
                             tick={{ fill: "white" }}
                             style={{ fontSize: "0.8rem" }}
                         />
                         <YAxis tick={{ fill: "white" }} domain={[0, 100]} />
                         <Tooltip
+                            labelFormatter={(label) =>
+                                new Date(label).toLocaleString([], {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                })
+                            }
+                            formatter={(value) => [`${value}%`, "Progress"]}
                             contentStyle={{
                                 backgroundColor: "rgba(30,30,60,0.9)",
                                 borderRadius: "10px",

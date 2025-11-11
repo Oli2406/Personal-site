@@ -44,7 +44,7 @@ public class SkillEndpoint {
     String username = authentication.getName();
     User user = userRepository.findByUsername(username);
     
-    SkillDetailDto createdSkill = skillService.createSkill(skill, user);
+    SkillDetailDto createdSkill = skillService.createOrUpdateSkill(skill, user);
     LOGGER.info("POST {} - user {} - payload {}", BASE_PATH, username, skill);
     return ResponseEntity.ok(createdSkill);
   }

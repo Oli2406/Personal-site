@@ -11,7 +11,7 @@ function Skills() {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
     const [progressHistory, setProgressHistory] = useState<
-        { progress: number; createdAt: string }[]
+        { progress: number; createdAt: Date }[]
     >([]);
     const [showMenu, setShowMenu] = useState(false);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
@@ -33,6 +33,7 @@ function Skills() {
     }, []);
 
     const handleSkillAddition = () => setShowMenu(true);
+
     const handleCloseMenu = () => setShowMenu(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,12 +62,12 @@ function Skills() {
             const updates = await SkillProgressService.getBySkill(skill.id, token);
             console.log(updates)
 
-            const formattedUpdates = updates.map((u: any) => ({
-                progress: u.progress ?? u.level ?? 0,
-                createdAt: u.createdAt
-                    ? new Date(u.createdAt).toLocaleDateString()
-                    : "Unknown",
-            }));
+            const formattedUpdates = updates
+                .map((u: any) => ({
+                    progress: u.progress ?? u.level ?? 0,
+                    createdAt: u.createdAt ? new Date(u.createdAt) : new Date(),
+                }))
+                .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
             setProgressHistory(formattedUpdates);
         } catch (err) {
@@ -80,7 +81,7 @@ function Skills() {
         if (!selectedSkill || !token) return;
 
         try {
-            await SkillProgressService.create(
+            await SkillService.create(
                 {
                     id: selectedSkill.id,
                     name: selectedSkill.name,
@@ -89,6 +90,7 @@ function Skills() {
                 },
                 token
             );
+
 
             const updates = await SkillProgressService.getBySkill(
                 selectedSkill.id,
@@ -100,6 +102,7 @@ function Skills() {
         } catch (err) {
             console.error("Failed to add update:", err);
         }
+        window.location.reload();
     };
 
     if (!isLoggedIn) {

@@ -22,7 +22,7 @@ export const SkillProgressService = {
         return response.json();
     },
 
-    async getBySkill(skillId: number, token?: string | null): Promise<{ progress: number; createdAt: string }[]> {
+    async getBySkill(skillId: number, token?: string | null): Promise<{ progress: number; createdAt: Date }[]> {
         const headers: Record<string, string> = { "Content-Type": "application/json" };
         if (token) headers.Authorization = `Bearer ${token}`;
 

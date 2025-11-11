@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,26 +49,49 @@ public class SkillServiceImpl implements SkillService {
   }
   
   @Override
-  public SkillDetailDto createSkill(SkillDetailDto skillDetailDto, User user) {
-    LOGGER.info("Creating skill {}", skillDetailDto);
-    Skill skillToSave = new Skill(
-        skillDetailDto.getName(),
-        skillDetailDto.getDescription(),
-        skillDetailDto.getProgress(),
-        user
-    );
+  public SkillDetailDto createOrUpdateSkill(SkillDetailDto skillDetailDto, User user) {
+    Skill skillToSave;
     
-    SkillProgress progressToSave = new SkillProgress(
-        skillToSave,
-        user,
-        skillDetailDto.getProgress(),
-        skillDetailDto.getDescription()
-    );
+    Optional<Skill> skillPresent = skillRepository.findById(skillDetailDto.getId());
     
-    skillToSave.addProgress(progressToSave);
-    
-    Skill saved = skillRepository.save(skillToSave);
-    return new SkillDetailDto(saved, user);
+    if(skillPresent.isPresent()) {
+      LOGGER.info("Updating skill {}", skillDetailDto);
+      skillToSave = skillPresent.get();
+      skillToSave.setName(skillDetailDto.getName());
+      skillToSave.setDescription(skillDetailDto.getDescription());
+      skillToSave.setProgress(skillDetailDto.getProgress());
+      
+      SkillProgress progress = new SkillProgress(
+          skillToSave,
+          user,
+          skillDetailDto.getProgress(),
+          skillDetailDto.getDescription()
+      );
+      skillToSave.addProgress(progress);
+      Skill saved = skillRepository.save(skillToSave);
+      return new SkillDetailDto(saved, user);
+      
+    } else {
+      LOGGER.info("Creating skill {}", skillDetailDto);
+      skillToSave = new Skill(
+          skillDetailDto.getName(),
+          skillDetailDto.getDescription(),
+          skillDetailDto.getProgress(),
+          user
+      );
+      
+      SkillProgress progressToSave = new SkillProgress(
+          skillToSave,
+          user,
+          skillDetailDto.getProgress(),
+          skillDetailDto.getDescription()
+      );
+      
+      skillToSave.addProgress(progressToSave);
+      
+      Skill saved = skillRepository.save(skillToSave);
+      return new SkillDetailDto(saved, user);
+    }
   }
   
   @Override
