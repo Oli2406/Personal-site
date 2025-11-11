@@ -7,7 +7,7 @@ This is my personal portfolio website which will be built to showcase my project
 | Section | Screenshot |
 |----------|-------------|
 | 💬 **Chatroom Example** | ![Home Screenshot](./showcaseScreenshots/chatroom_example.png) |
-| 💡 **Skill Tracker** | ![Skills Screenshot](./showcaseScreenshots/skills_example.png) |
+| 💡 **Skill Tracker** | ![Skills Screenshot](./showcaseScreenshots/skills_example.png?refresh=1) |
 | 👤 **About Section** | ![Chat Screenshot](./showcaseScreenshots/about_example.png) |
 
 
