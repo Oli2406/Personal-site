@@ -120,9 +120,14 @@ function Skills() {
                             skills={skills.map((s) => ({
                                 name: s.name,
                                 level: s.progress,
-                                onClick: () => handleSkillClick(s),
                             }))}
+                            onSkillClick={(skillName) => {
+                                const skill = skills.find((s) => s.name === skillName);
+                                if (skill) handleSkillClick(skill);
+                            }}
+                            selectedSkillName={selectedSkill?.name}
                         />
+
                     ) : (
                         <p className="text-gray-300 text-center">
                             No skills to display yet.
@@ -179,13 +184,12 @@ function Skills() {
                                                 <input
                                                     type="number"
                                                     min="0"
-                                                    max="3600"
-                                                    value={newSessionTime}
+                                                    title="session length (in minutes)"
                                                     onChange={(e) =>
                                                         setNewSessionTime(Number(e.target.value))
                                                     }
-                                                    placeholder="New progress %"
-                                                    className="w-32 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
+                                                    placeholder="session length (in minutes)"
+                                                    className="w-64 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
                                                 />
                                                 <button
                                                     type="submit"

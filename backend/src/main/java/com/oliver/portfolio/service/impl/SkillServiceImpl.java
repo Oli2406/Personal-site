@@ -68,7 +68,7 @@ public class SkillServiceImpl implements SkillService {
           skillToSave,
           user,
           skillDetailDto.getDescription(),
-          newProgress
+          skillDetailDto.getProgress()
       );
       skillToSave.addProgress(progress);
       Skill saved = skillRepository.save(skillToSave);
@@ -79,16 +79,16 @@ public class SkillServiceImpl implements SkillService {
       skillToSave = new Skill(
           skillDetailDto.getName(),
           skillDetailDto.getDescription(),
-          skillDetailDto.getProgress(),
+          0,
           user,
-          3600
+          skillDetailDto.getProgress()
       );
       
       SkillProgress progressToSave = new SkillProgress(
           skillToSave,
           user,
           skillDetailDto.getDescription(),
-          skillDetailDto.getProgress()
+          0
       );
       
       skillToSave.addProgress(progressToSave);
