@@ -2,6 +2,7 @@ package com.oliver.portfolio.endpoint;
 
 import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
 import com.oliver.portfolio.endpoint.dto.SkillProgressDto;
+import com.oliver.portfolio.endpoint.dto.SkillUpdateDto;
 import com.oliver.portfolio.model.Skill;
 import com.oliver.portfolio.model.SkillProgress;
 import com.oliver.portfolio.model.User;
@@ -21,7 +22,6 @@ import org.springframework.security.core.Authentication;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(SkillProgressEndpoint.BASE_PATH)
@@ -56,7 +56,7 @@ public class SkillProgressEndpoint {
   
   @PostMapping
   public ResponseEntity<SkillProgressDto> createSkillProgress(
-      @RequestBody SkillDetailDto skill,
+      @RequestBody SkillUpdateDto skill,
       Authentication authentication
   ) {
     String username = authentication.getName();
@@ -70,9 +70,9 @@ public class SkillProgressEndpoint {
         saved.getId(),
         saved.getSkill().getName(),
         saved.getNote(),
-        saved.getLevel(),
+        saved.getSessionTimeMinutes(),
         saved.getTimestamp()
-        );
+    );
     
     return ResponseEntity.ok(dto);
   }

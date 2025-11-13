@@ -92,8 +92,6 @@ export default function Chat() {
             return prev;
         });
 
-        ws.onopen = () => console.log(`✅ Connected to room: ${code}`);
-
         ws.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
@@ -141,8 +139,6 @@ export default function Chat() {
         ws.onerror = (err) => console.error("WebSocket error:", err);
 
         setCurrentRoom({ code, participants: [], messages: [] });
-
-        console.log(API_BASE_URL)
     };
 
     const handleJoinRoom = (e: React.FormEvent) => {

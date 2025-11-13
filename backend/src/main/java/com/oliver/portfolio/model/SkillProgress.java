@@ -19,7 +19,7 @@ public class SkillProgress {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
   
-  private int level;
+  private int sessionTimeMinutes;
   
   @Column(length = 500)
   private String note;
@@ -28,15 +28,14 @@ public class SkillProgress {
   
   public SkillProgress() {}
   
-  public SkillProgress(Skill skill, User user, int level, String note) {
+  public SkillProgress(Skill skill, User user, String note, int sessionTimeMinutes) {
     this.skill = skill;
     this.user = user;
-    this.level = level;
     this.note = note;
     this.timestamp = LocalDateTime.now();
+    this.sessionTimeMinutes = sessionTimeMinutes;
   }
   
-  // Getters and Setters
   public Long getId() {
     return id;
   }
@@ -57,14 +56,6 @@ public class SkillProgress {
     this.user = user;
   }
   
-  public int getLevel() {
-    return level;
-  }
-  
-  public void setLevel(int level) {
-    this.level = level;
-  }
-  
   public String getNote() {
     return note;
   }
@@ -79,5 +70,17 @@ public class SkillProgress {
   
   public void setTimestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
+  }
+  
+  public void setId(Long id) {
+    this.id = id;
+  }
+  
+  public int getSessionTimeMinutes() {
+    return sessionTimeMinutes;
+  }
+  
+  public void setSessionTimeMinutes(int sessionTimeMinutes) {
+    this.sessionTimeMinutes = sessionTimeMinutes;
   }
 }

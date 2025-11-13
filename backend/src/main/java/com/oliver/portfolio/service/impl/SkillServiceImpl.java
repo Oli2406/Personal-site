@@ -55,17 +55,20 @@ public class SkillServiceImpl implements SkillService {
     Optional<Skill> skillPresent = skillRepository.findById(skillDetailDto.getId());
     
     if(skillPresent.isPresent()) {
-      LOGGER.info("Updating skill {}", skillDetailDto);
+      LOGGER.info("Updating skill {}", skillDetailDto.getProgress());
       skillToSave = skillPresent.get();
+      skillToSave.setTargetProgressMinutes(skillPresent.get().getTargetProgressMinutes());
+      skillToSave.addTime(skillDetailDto.getProgress());
+      int newProgress = skillToSave.computeProgressPercentage();
       skillToSave.setName(skillDetailDto.getName());
       skillToSave.setDescription(skillDetailDto.getDescription());
-      skillToSave.setProgress(skillDetailDto.getProgress());
+      skillToSave.setProgress(newProgress);
       
       SkillProgress progress = new SkillProgress(
           skillToSave,
           user,
-          skillDetailDto.getProgress(),
-          skillDetailDto.getDescription()
+          skillDetailDto.getDescription(),
+          newProgress
       );
       skillToSave.addProgress(progress);
       Skill saved = skillRepository.save(skillToSave);
@@ -77,19 +80,21 @@ public class SkillServiceImpl implements SkillService {
           skillDetailDto.getName(),
           skillDetailDto.getDescription(),
           skillDetailDto.getProgress(),
-          user
+          user,
+          3600
       );
       
       SkillProgress progressToSave = new SkillProgress(
           skillToSave,
           user,
-          skillDetailDto.getProgress(),
-          skillDetailDto.getDescription()
+          skillDetailDto.getDescription(),
+          skillDetailDto.getProgress()
       );
       
       skillToSave.addProgress(progressToSave);
-      
       Skill saved = skillRepository.save(skillToSave);
+      skillProgressRepository.save(progressToSave);
+      
       return new SkillDetailDto(saved, user);
     }
   }

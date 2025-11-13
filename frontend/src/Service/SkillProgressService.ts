@@ -2,7 +2,7 @@ export interface SkillProgress {
     id: number;
     name: string;
     description: string;
-    progress: number;
+    sessionTime: number;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
@@ -19,6 +19,7 @@ export const SkillProgressService = {
         });
 
         if(!response.ok) throw new Error(response.statusText);
+        console.log(response.json())
         return response.json();
     },
 

@@ -1,7 +1,7 @@
 package com.oliver.portfolio.service.impl;
 
-import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
 import com.oliver.portfolio.endpoint.dto.SkillProgressDto;
+import com.oliver.portfolio.endpoint.dto.SkillUpdateDto;
 import com.oliver.portfolio.model.Skill;
 import com.oliver.portfolio.model.SkillProgress;
 import com.oliver.portfolio.model.User;
@@ -32,7 +32,7 @@ public class SkillProgressServiceImpl implements SkillProgressService {
   }
   
   @Override
-  public SkillProgress save(SkillDetailDto skill, User user) {
+  public SkillProgress save(SkillUpdateDto skill, User user) {
     LOGGER.info("Saving SkillProgress");
     
     Skill existingSkill = skillRepository.findByNameAndUser(skill.getName(), user);
@@ -40,8 +40,8 @@ public class SkillProgressServiceImpl implements SkillProgressService {
     SkillProgress progress = new SkillProgress(
         existingSkill,
         user,
-        skill.getProgress(),
-        skill.getDescription()
+        skill.getDescription(),
+        0
     );
     
     return skillProgressRepository.save(progress);
@@ -56,7 +56,7 @@ public class SkillProgressServiceImpl implements SkillProgressService {
             skillProgress.getId(),
             skillProgress.getSkill().getName(),
             skillProgress.getNote(),
-            skillProgress.getLevel(),
+            skillProgress.getSessionTimeMinutes(),
             skillProgress.getTimestamp()
         ))
         .collect(Collectors.toList());

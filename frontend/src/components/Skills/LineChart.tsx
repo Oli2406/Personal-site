@@ -74,7 +74,7 @@ const LineChartProgress: React.FC<LineChartProgressProps> = ({
                                     second: "2-digit",
                                 })
                             }
-                            formatter={(value) => [`${value}%`, "Progress"]}
+                            formatter={(value) => [`${value} minute session`]}
                             contentStyle={{
                                 backgroundColor: "rgba(30,30,60,0.9)",
                                 borderRadius: "10px",

@@ -204,29 +204,30 @@ public class UserSkillDataGenerator implements CommandLineRunner {
     List<SkillProgress> allProgress = new ArrayList<>();
     for (User user : users) {
       for (int i = 0; i < 10; i++) {
-        int lastProgress = random.nextInt(101);
         Pair<String, String> skillInfo = randomSkill();
         Skill skill = new Skill();
         skill.setName(skillInfo.getLeft());
         skill.setDescription(skillInfo.getRight());
-        skill.setProgress(lastProgress);
         skill.setUser(user);
-        allSkills.add(skill);
+        skill.setTargetProgressMinutes(random.nextInt(1800, 3600));
         for(int j = 0; j < 10; j++) {
-          int progress = j == 9 ? lastProgress : random.nextInt(101);
+          int targetProgress = random.nextInt(60, 180);
+          skill.addTime(targetProgress);
           SkillProgress skillProgress = new SkillProgress(
               skill,
               user,
-              progress,
-              "pre generated note: " + j
+              "pre generated note: " + j,
+              targetProgress
           );
           allProgress.add(skillProgress);
         }
+        skill.setProgress(skill.computeProgressPercentage());
+        allSkills.add(skill);
       }
     }
     
     skillRepository.saveAll(allSkills);
     skillProgressRepository.saveAll(allProgress);
-    LOGGER.info("Created {} skills (10 per user).", allSkills.size());
+    LOGGER.info("Created {} skills (10 per user) and {} progress updates.", allSkills.size(), allProgress.size());
   }
 }

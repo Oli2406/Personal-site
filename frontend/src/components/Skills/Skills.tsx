@@ -21,7 +21,7 @@ function Skills() {
         description: "",
         progress: 0,
     });
-    const [newProgress, setNewProgress] = useState(0);
+    const [newSessionTime, setNewSessionTime] = useState(0);
 
     useEffect(() => {
         if (!token) return;
@@ -44,7 +44,7 @@ function Skills() {
             if (!token) return;
             if (token && isLoggedIn) {
                 const created = await SkillService.create(newSkill, token);
-                await SkillProgressService.create(newSkill, token);
+                //await SkillProgressService.create({id: newSkill.id, name: newSkill.name, description: newSkill.description, sessionTime: newSkill.progress}, token);
                 setSkills([...skills, created]);
                 setNewSkill({ id: 0, name: "", description: "", progress: 0 });
                 setShowMenu(false);
@@ -60,7 +60,6 @@ function Skills() {
 
         try {
             const updates = await SkillProgressService.getBySkill(skill.id, token);
-            console.log(updates)
 
             const formattedUpdates = updates
                 .map((u: any) => ({
@@ -86,7 +85,7 @@ function Skills() {
                     id: selectedSkill.id,
                     name: selectedSkill.name,
                     description: selectedSkill.description,
-                    progress: newProgress,
+                    progress: newSessionTime,
                 },
                 token
             );
@@ -96,8 +95,9 @@ function Skills() {
                 selectedSkill.id,
                 token
             );
+
             setProgressHistory(updates);
-            setNewProgress(0);
+            setNewSessionTime(0);
             setShowUpdateForm(false);
         } catch (err) {
             console.error("Failed to add update:", err);
@@ -151,7 +151,7 @@ function Skills() {
 
                             <LineChartProgress
                                 data={progressHistory}
-                                title="Progress History"
+                                title="Session history (in minutes)"
                             />
 
                             <div className="flex flex-col items-center mt-6">
@@ -160,31 +160,42 @@ function Skills() {
                                         onClick={() => setShowUpdateForm(true)}
                                         className="bg-white/10 border border-white/20 text-gray-100 font-semibold px-6 py-2 rounded-full hover:bg-white/20 transition-all duration-300"
                                     >
-                                        + Add Update
+                                        + Start a learning session
                                     </button>
                                 ) : (
-                                    <form
-                                        onSubmit={handleAddUpdate}
-                                        className="flex flex-col items-center gap-3"
-                                    >
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            max="100"
-                                            value={newProgress}
-                                            onChange={(e) =>
-                                                setNewProgress(Number(e.target.value))
-                                            }
-                                            placeholder="New progress %"
-                                            className="w-32 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition"
-                                        >
-                                            Save Update
-                                        </button>
-                                    </form>
+                                    <div
+                                        className="fixed inset-0 flex items-center justify-center z-50 animate-fade-in-up">
+                                        <div
+                                            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl w-full max-w-md text-gray-100 relative">
+                                            <form
+                                                onSubmit={handleAddUpdate}
+                                                className="flex flex-col items-center gap-3"
+                                            >
+                                                <button
+                                                    onClick={() => setShowUpdateForm(false)}
+                                                    className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg font-semibold transition-colors duration-200">
+                                                    ✕
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    max="3600"
+                                                    value={newSessionTime}
+                                                    onChange={(e) =>
+                                                        setNewSessionTime(Number(e.target.value))
+                                                    }
+                                                    placeholder="New progress %"
+                                                    className="w-32 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition"
+                                                >
+                                                    Save Update
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </>
@@ -197,7 +208,8 @@ function Skills() {
             </div>
 
             {showMenu && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
+                <div
+                    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
                     <form
                         onSubmit={handleSubmit}
                         className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl w-full max-w-md text-gray-100"
@@ -212,7 +224,7 @@ function Skills() {
                                 placeholder="Skill Name"
                                 value={newSkill.name}
                                 onChange={(e) =>
-                                    setNewSkill({ ...newSkill, name: e.target.value })
+                                    setNewSkill({...newSkill, name: e.target.value })
                                 }
                                 className="w-full p-3 rounded-xl bg-white/10 border border-white/20 placeholder-gray-400 focus:outline-none focus:border-indigo-400"
                             />
@@ -227,14 +239,12 @@ function Skills() {
                             />
                             <input
                                 type="number"
-                                placeholder="Progress %"
+                                placeholder="How many hours of practice?"
                                 min="0"
-                                max="100"
-                                value={newSkill.progress}
                                 onChange={(e) =>
                                     setNewSkill({
                                         ...newSkill,
-                                        progress: Number(e.target.value),
+                                        progress: Number(e.target.value) * 60,
                                     })
                                 }
                                 className="w-full p-3 rounded-xl bg-white/10 border border-white/20 placeholder-gray-400 focus:outline-none focus:border-indigo-400"

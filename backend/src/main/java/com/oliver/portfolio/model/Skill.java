@@ -16,6 +16,9 @@ public class Skill {
   private String name;
   private String description;
   private int progress;
+  private int targetProgressMinutes;
+  
+  private int practicedMinutes = 0;
   
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
@@ -27,11 +30,12 @@ public class Skill {
   public Skill() {
   }
   
-  public Skill(String name, String description, int progress, User user) {
+  public Skill(String name, String description, int progress, User user, int targetProgressMinutes) {
     this.name = name;
     this.description = description;
     this.progress = progress;
     this.user = user;
+    this.targetProgressMinutes = targetProgressMinutes;
   }
   
   public int getId() {
@@ -85,5 +89,26 @@ public class Skill {
   
   public SkillDetailDto skillDetailDtoToEntity(Skill skill, User user) {
     return new SkillDetailDto(skill, user);
+  }
+  
+  public int getTargetProgressMinutes() {
+    return targetProgressMinutes;
+  }
+  
+  public void setTargetProgressMinutes(int targetProgressMinutes) {
+    this.targetProgressMinutes = targetProgressMinutes;
+  }
+  
+  public void addTime (int minutes) {
+    practicedMinutes += minutes;
+  }
+  
+  public int computeProgressPercentage() {
+    if (targetProgressMinutes <= 0) {
+      return 0;
+    }
+    double ratio = (double) practicedMinutes / targetProgressMinutes;
+    int percentage = (int) Math.round(ratio * 100);
+    return Math.min(percentage, 100);
   }
 }
