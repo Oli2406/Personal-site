@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import BarChart from "./BarChart";
 import { SkillProgressService } from "../../Service/SkillProgressService.ts";
 import LineChartProgress from "./LineChart";
+import LearningSessionTimer  from "../Timer/LearningSessionTimer.tsx";
 
 function Skills() {
     const { token, isLoggedIn } = useAuth();
@@ -15,6 +16,7 @@ function Skills() {
     >([]);
     const [showMenu, setShowMenu] = useState(false);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [showTimer, setShowTimer] = useState(false);
     const [newSkill, setNewSkill] = useState({
         id: 0,
         name: "",
@@ -33,7 +35,6 @@ function Skills() {
     }, []);
 
     const handleSkillAddition = () => setShowMenu(true);
-
     const handleCloseMenu = () => setShowMenu(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +45,6 @@ function Skills() {
             if (!token) return;
             if (token && isLoggedIn) {
                 const created = await SkillService.create(newSkill, token);
-                //await SkillProgressService.create({id: newSkill.id, name: newSkill.name, description: newSkill.description, sessionTime: newSkill.progress}, token);
                 setSkills([...skills, created]);
                 setNewSkill({ id: 0, name: "", description: "", progress: 0 });
                 setShowMenu(false);
@@ -75,9 +75,9 @@ function Skills() {
         }
     };
 
-    const handleAddUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const saveSession = async (minutes: number) => {
         if (!selectedSkill || !token) return;
+        if (minutes <= 0) return;
 
         try {
             await SkillService.create(
@@ -85,24 +85,31 @@ function Skills() {
                     id: selectedSkill.id,
                     name: selectedSkill.name,
                     description: selectedSkill.description,
-                    progress: newSessionTime,
+                    progress: minutes,
                 },
                 token
             );
 
+            const updates = await SkillProgressService.getBySkill(selectedSkill.id, token);
 
-            const updates = await SkillProgressService.getBySkill(
-                selectedSkill.id,
-                token
-            );
+            const formattedUpdates = updates
+                .map((u: any) => ({
+                    progress: u.progress ?? u.level ?? 0,
+                    createdAt: u.createdAt ? new Date(u.createdAt) : new Date(),
+                }))
+                .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-            setProgressHistory(updates);
-            setNewSessionTime(0);
-            setShowUpdateForm(false);
+            setProgressHistory(formattedUpdates);
         } catch (err) {
             console.error("Failed to add update:", err);
         }
-        window.location.reload();
+    };
+
+    const handleAddUpdateManual = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await saveSession(newSessionTime);
+        setNewSessionTime(0);
+        setShowUpdateForm(false);
     };
 
     if (!isLoggedIn) {
@@ -127,7 +134,6 @@ function Skills() {
                             }}
                             selectedSkillName={selectedSkill?.name}
                         />
-
                     ) : (
                         <p className="text-gray-300 text-center">
                             No skills to display yet.
@@ -159,48 +165,22 @@ function Skills() {
                                 title="Session history (in minutes)"
                             />
 
-                            <div className="flex flex-col items-center mt-6">
-                                {!showUpdateForm ? (
+                            <div className="flex flex-col items-center mt-6 gap-3">
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        onClick={() => setShowTimer(true)}
+                                        className="bg-white/10 border border-white/20 text-gray-100 font-semibold px-6 py-2 rounded-full hover:bg-white/20 transition-all duration-300"
+                                    >
+                                        Start timed session
+                                    </button>
+
                                     <button
                                         onClick={() => setShowUpdateForm(true)}
                                         className="bg-white/10 border border-white/20 text-gray-100 font-semibold px-6 py-2 rounded-full hover:bg-white/20 transition-all duration-300"
                                     >
-                                        + Start a learning session
+                                        Enter minutes manually
                                     </button>
-                                ) : (
-                                    <div
-                                        className="fixed inset-0 flex items-center justify-center z-50 animate-fade-in-up">
-                                        <div
-                                            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl w-full max-w-md text-gray-100 relative">
-                                            <form
-                                                onSubmit={handleAddUpdate}
-                                                className="flex flex-col items-center gap-3"
-                                            >
-                                                <button
-                                                    onClick={() => setShowUpdateForm(false)}
-                                                    className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg font-semibold transition-colors duration-200">
-                                                    ✕
-                                                </button>
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    title="session length (in minutes)"
-                                                    onChange={(e) =>
-                                                        setNewSessionTime(Number(e.target.value))
-                                                    }
-                                                    placeholder="session length (in minutes)"
-                                                    className="w-64 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
-                                                />
-                                                <button
-                                                    type="submit"
-                                                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition"
-                                                >
-                                                    Save Update
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                )}
+                                </div>
                             </div>
                         </>
                     ) : (
@@ -211,9 +191,57 @@ function Skills() {
                 </div>
             </div>
 
+            {showUpdateForm && (
+                <div className="fixed inset-0 flex items-center justify-center z-50 animate-fade-in-up bg-black/40 backdrop-blur-sm">
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl w-full max-w-md text-gray-100 relative">
+                        <form
+                            onSubmit={handleAddUpdateManual}
+                            className="flex flex-col items-center gap-3"
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setShowUpdateForm(false)}
+                                className="absolute top-3 right-3 text-gray-400 hover:text-white text-lg font-semibold transition-colors duration-200"
+                            >
+                                ✕
+                            </button>
+                            <h2 className="text-2xl font-bold mb-4">
+                                Enter session length
+                            </h2>
+                            <input
+                                type="number"
+                                min="0"
+                                title="session length (in minutes)"
+                                value={newSessionTime || ""}
+                                onChange={(e) =>
+                                    setNewSessionTime(Number(e.target.value))
+                                }
+                                placeholder="Session length (in minutes)"
+                                className="w-64 p-2 rounded-xl bg-white/10 border border-white/20 text-center"
+                            />
+                            <button
+                                type="submit"
+                                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition"
+                            >
+                                Save Update
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showTimer && selectedSkill && (
+                <LearningSessionTimer
+                    onCancel={() => setShowTimer(false)}
+                    onFinish={async (minutes) => {
+                        await saveSession(minutes);
+                        setShowTimer(false);
+                    }}
+                />
+            )}
+
             {showMenu && (
-                <div
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
                     <form
                         onSubmit={handleSubmit}
                         className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl w-full max-w-md text-gray-100"
@@ -228,7 +256,7 @@ function Skills() {
                                 placeholder="Skill Name"
                                 value={newSkill.name}
                                 onChange={(e) =>
-                                    setNewSkill({...newSkill, name: e.target.value })
+                                    setNewSkill({ ...newSkill, name: e.target.value })
                                 }
                                 className="w-full p-3 rounded-xl bg-white/10 border border-white/20 placeholder-gray-400 focus:outline-none focus:border-indigo-400"
                             />
