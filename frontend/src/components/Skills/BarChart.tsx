@@ -12,6 +12,7 @@ import {
 interface Skill {
     name: string;
     level: number;
+    targetMinutes: number;
 }
 
 interface SkillChartProps {

@@ -8,6 +8,7 @@ public class SkillDetailDto {
   private String name;
   private String description;
   private int progress;
+  private int targetMinutes;
   private User user;
   
   public SkillDetailDto() {}
@@ -17,6 +18,7 @@ public class SkillDetailDto {
     this.name = skill.getName();
     this.description = skill.getDescription();
     this.progress = skill.getProgress();
+    this.targetMinutes = skill.getTargetProgressMinutes();
     this.user = user;
   }
   
@@ -50,5 +52,21 @@ public class SkillDetailDto {
   
   public void setId(int id) {
     this.id = id;
+  }
+  
+  public int getTargetMinutes() {
+    return targetMinutes;
+  }
+  
+  public void setTargetMinutes(int targetMinutes) {
+    this.targetMinutes = targetMinutes;
+  }
+  
+  public User getUser() {
+    return user;
+  }
+  
+  public void setUser(User user) {
+    this.user = user;
   }
 }
