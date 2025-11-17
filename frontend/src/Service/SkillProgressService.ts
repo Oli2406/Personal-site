@@ -19,7 +19,6 @@ export const SkillProgressService = {
         });
 
         if(!response.ok) throw new Error(response.statusText);
-        console.log(response.json())
         return response.json();
     },
 

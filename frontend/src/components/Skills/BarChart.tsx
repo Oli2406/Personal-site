@@ -44,6 +44,29 @@ const SkillLabel = ({
     );
 };
 
+const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload || !payload.length) return null;
+
+    const skill = payload[0].payload;
+    const currentMinutes = Math.round((skill.level / 100) * skill.targetMinutes);
+
+    return (
+        <div
+            style={{
+                backgroundColor: "rgba(30,30,60,0.9)",
+                padding: "10px",
+                borderRadius: "10px",
+                color: "white"
+            }}
+        >
+            <div><strong>{skill.name}</strong></div>
+            <div>Progress: {skill.level}%</div>
+            <div>Time: {currentMinutes} / {skill.targetMinutes} min</div>
+        </div>
+    );
+};
+
+
 const SkillChart: React.FC<SkillChartProps> = ({
                                                    skills,
                                                    onSkillClick,
@@ -77,6 +100,7 @@ const SkillChart: React.FC<SkillChartProps> = ({
                 />
 
                 <Tooltip
+                    content={<CustomTooltip />}
                     contentStyle={{
                         backgroundColor: "rgba(30,30,60,0.9)",
                         borderRadius: "10px",
@@ -84,6 +108,7 @@ const SkillChart: React.FC<SkillChartProps> = ({
                         color: "#fff",
                     }}
                 />
+
 
                 <Bar
                     dataKey="level"
