@@ -9,7 +9,7 @@ public class SkillDetailDto {
   private String description;
   private int progress;
   private int targetMinutes;
-  private User user;
+  private UserDetailDto user;
   
   public SkillDetailDto() {}
   
@@ -19,7 +19,8 @@ public class SkillDetailDto {
     this.description = skill.getDescription();
     this.progress = skill.getProgress();
     this.targetMinutes = skill.getTargetProgressMinutes();
-    this.user = user;
+    this.user = new UserDetailDto();
+    this.user.mapUserToUserDetailDto(user);
   }
   
   public String getName() {
@@ -62,11 +63,11 @@ public class SkillDetailDto {
     this.targetMinutes = targetMinutes;
   }
   
-  public User getUser() {
+  public UserDetailDto getUser() {
     return user;
   }
   
   public void setUser(User user) {
-    this.user = user;
+    this.user.mapUserToUserDetailDto(user);
   }
 }
