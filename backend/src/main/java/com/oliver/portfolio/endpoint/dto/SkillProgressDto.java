@@ -8,6 +8,7 @@ public class SkillProgressDto {
   private String description;
   private int level;
   private LocalDateTime createdAt;
+  private int skillStreakDays = 0;
   
   public SkillProgressDto(Long id, String name, String description, int level, LocalDateTime createdAt) {
     this.id = id;
@@ -57,5 +58,18 @@ public class SkillProgressDto {
   
   public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+  
+  public int getSkillStreakDays() {
+    return skillStreakDays;
+  }
+  
+  public void setSkillStreakDays(int skillStreakDays) {
+    this.skillStreakDays = skillStreakDays;
+  }
+  
+  @Override
+  public String toString() {
+    return("ID: " + id + "\nname: " + name + "\ndescription: " + description + "\nlevel: " + level + "\ncreatedAt: " + createdAt.toString() + "\nskillStreakDays: " + skillStreakDays);
   }
 }

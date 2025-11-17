@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,14 +53,43 @@ public class SkillProgressServiceImpl implements SkillProgressService {
   public List<SkillProgressDto> getAllUpdatesBySkill(Long userId, int skillId) {
     LOGGER.info("Getting all SkillProgress updates for userId {} and skillId: {}", userId, skillId);
     List<SkillProgress> skills = skillProgressRepository.findAllByUser_IdAndSkill_Id(userId, skillId);
+    int skillPracticeStreak = calculateStreak(skills);
     return skills.stream()
-        .map(skillProgress -> new SkillProgressDto(
-            skillProgress.getId(),
-            skillProgress.getSkill().getName(),
-            skillProgress.getNote(),
-            skillProgress.getSessionTimeMinutes(),
-            skillProgress.getTimestamp()
-        ))
+        .map(skillProgress -> {
+          SkillProgressDto skillProgressDto = new SkillProgressDto(
+              skillProgress.getId(),
+              skillProgress.getSkill().getName(),
+              skillProgress.getNote(),
+              skillProgress.getSessionTimeMinutes(),
+              skillProgress.getTimestamp()
+          );
+          skillProgressDto.setSkillStreakDays(skillPracticeStreak);
+          LOGGER.info("skill Streak in days: {}", skillPracticeStreak);
+          return skillProgressDto;
+        })
         .collect(Collectors.toList());
+  }
+  
+  private int calculateStreak(List<SkillProgress> skills) {
+    if (skills.size() < 2) return 0;
+    
+    int streak = 0;
+    
+    for (int i = 0; i < skills.size() - 1; i++) {
+      LocalDateTime beforeDate = skills.get(i).getTimestamp().toLocalDate().atStartOfDay();
+      LocalDateTime afterDate  = skills.get(i + 1).getTimestamp().toLocalDate().atStartOfDay();
+      
+      long daysBetween = ChronoUnit.DAYS.between(beforeDate, afterDate);
+      long positive = Math.abs(daysBetween);
+      
+      if (positive == 1) {
+        streak++;
+        System.out.println("streak: " + streak);
+      } else if (positive > 1) {
+        streak = 0;
+        System.out.println("streak: " + streak);
+      }
+    }
+    return streak;
   }
 }

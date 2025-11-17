@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -219,6 +220,7 @@ public class UserSkillDataGenerator implements CommandLineRunner {
               "pre generated note: " + j,
               targetProgress
           );
+          skillProgress.setTimestamp(LocalDateTime.now().minusDays(j));
           allProgress.add(skillProgress);
         }
         skill.setProgress(skill.computeProgressPercentage());

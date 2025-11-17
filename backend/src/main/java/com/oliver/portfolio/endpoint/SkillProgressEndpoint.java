@@ -1,6 +1,5 @@
 package com.oliver.portfolio.endpoint;
 
-import com.oliver.portfolio.endpoint.dto.SkillDetailDto;
 import com.oliver.portfolio.endpoint.dto.SkillProgressDto;
 import com.oliver.portfolio.endpoint.dto.SkillUpdateDto;
 import com.oliver.portfolio.model.Skill;
