@@ -32,6 +32,6 @@ export const SkillProgressService = {
         });
 
         if (!response.ok) throw new Error(response.statusText);
-        return response.json();
+        return await response.json();
     },
 }

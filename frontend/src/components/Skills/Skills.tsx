@@ -22,7 +22,8 @@ function Skills() {
         name: "",
         description: "",
         progress: 0,
-        targetMinutes: 0
+        targetMinutes: 0,
+        skillStreakDays: 0
     });
     const [newSessionTime, setNewSessionTime] = useState(0);
 
@@ -47,7 +48,7 @@ function Skills() {
             if (token && isLoggedIn) {
                 const created = await SkillService.create(newSkill, token);
                 setSkills([...skills, created]);
-                setNewSkill({ id: 0, name: "", description: "", progress: 0 , targetMinutes: 0});
+                setNewSkill({ id: 0, name: "", description: "", progress: 0 , targetMinutes: 0, skillStreakDays: 0});
                 setShowMenu(false);
             }
         } catch (err) {
@@ -87,7 +88,8 @@ function Skills() {
                     name: selectedSkill.name,
                     description: selectedSkill.description,
                     progress: minutes,
-                    targetMinutes: selectedSkill.targetMinutes
+                    targetMinutes: selectedSkill.targetMinutes,
+                    skillStreakDays: selectedSkill.skillStreakDays
                 },
                 token
             );
@@ -129,7 +131,8 @@ function Skills() {
                             skills={skills.map((s) => ({
                                 name: s.name,
                                 level: s.progress,
-                                targetMinutes: s.targetMinutes
+                                targetMinutes: s.targetMinutes,
+                                streak: s.skillStreakDays
                             }))}
                             onSkillClick={(skillName) => {
                                 const skill = skills.find((s) => s.name === skillName);

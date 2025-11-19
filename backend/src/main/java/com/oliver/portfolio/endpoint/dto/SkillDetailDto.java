@@ -10,6 +10,7 @@ public class SkillDetailDto {
   private int progress;
   private int targetMinutes;
   private UserDetailDto user;
+  private int skillStreakDays;
   
   public SkillDetailDto() {}
   
@@ -21,6 +22,7 @@ public class SkillDetailDto {
     this.targetMinutes = skill.getTargetProgressMinutes();
     this.user = new UserDetailDto();
     this.user.mapUserToUserDetailDto(user);
+    this.skillStreakDays = 0;
   }
   
   public String getName() {
@@ -69,5 +71,13 @@ public class SkillDetailDto {
   
   public void setUser(User user) {
     this.user.mapUserToUserDetailDto(user);
+  }
+  
+  public int getSkillStreakDays() {
+    return skillStreakDays;
+  }
+  
+  public void setSkillStreakDays(int skillStreakDays) {
+    this.skillStreakDays = skillStreakDays;
   }
 }

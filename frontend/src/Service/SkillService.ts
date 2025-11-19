@@ -4,6 +4,7 @@ export interface Skill {
     description: string;
     progress: number;
     targetMinutes: number;
+    skillStreakDays: number;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
@@ -17,10 +18,7 @@ export const SkillService = {
 
         if (!response.ok) throw new Error(response.statusText);
 
-        const data = await response.json();
-        console.log("Received skills:", data);
-
-        return data;
+        return await response.json();
     },
 
     async create(skill: Skill, token?: string | null): Promise<Skill> {

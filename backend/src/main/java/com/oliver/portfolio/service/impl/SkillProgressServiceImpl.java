@@ -64,7 +64,6 @@ public class SkillProgressServiceImpl implements SkillProgressService {
               skillProgress.getTimestamp()
           );
           skillProgressDto.setSkillStreakDays(skillPracticeStreak);
-          LOGGER.info("skill Streak in days: {}", skillPracticeStreak);
           return skillProgressDto;
         })
         .collect(Collectors.toList());
@@ -84,10 +83,8 @@ public class SkillProgressServiceImpl implements SkillProgressService {
       
       if (positive == 1) {
         streak++;
-        System.out.println("streak: " + streak);
       } else if (positive > 1) {
         streak = 0;
-        System.out.println("streak: " + streak);
       }
     }
     return streak;

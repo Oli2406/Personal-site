@@ -13,6 +13,7 @@ interface Skill {
     name: string;
     level: number;
     targetMinutes: number;
+    streak: number;
 }
 
 interface SkillChartProps {
@@ -27,7 +28,11 @@ const SkillLabel = ({
                         payload,
                         onSkillClick,
                         selected,
+                        skill,
                     }: any) => {
+
+    const showFlame = skill && skill.streak > 3;
+
     return (
         <text
             x={x}
@@ -39,10 +44,12 @@ const SkillLabel = ({
             style={{ cursor: "pointer" }}
             onClick={() => onSkillClick && onSkillClick(payload.value)}
         >
-            {payload.value}
+            {payload.value} {showFlame && `${"\u00A0".repeat(4)}${skill.streak}🔥`}
         </text>
     );
 };
+
+
 
 const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload || !payload.length) return null;
@@ -90,14 +97,20 @@ const SkillChart: React.FC<SkillChartProps> = ({
                     dataKey="name"
                     type="category"
                     width={120}
-                    tick={(props) => (
-                        <SkillLabel
-                            {...props}
-                            onSkillClick={onSkillClick}
-                            selected={selectedSkillName === props.payload.value}
-                        />
-                    )}
+                    tick={(props) => {
+                        const skill = skills.find(s => s.name === props.payload.value);
+                        return (
+                            <SkillLabel
+                                {...props}
+                                skill={skill}
+                                onSkillClick={onSkillClick}
+                                selected={selectedSkillName === props.payload.value}
+                            />
+                        );
+                    }}
                 />
+
+
 
                 <Tooltip
                     content={<CustomTooltip />}

@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +38,13 @@ public class SkillServiceImpl implements SkillService {
   public List<SkillDetailDto> getAllSkills() {
     LOGGER.info("Getting all skills");
     return skillRepository.findAll().stream()
-        .map(skill -> new SkillDetailDto(skill, skill.getUser()))
+        .map(skill -> {
+            SkillDetailDto toSave = new SkillDetailDto(skill, skill.getUser());
+            List<SkillProgress> progresses = skillProgressRepository.findAllByUser_IdAndSkill_Id(skill.getUser().getId(), skill.getId());
+            int streak = calculateStreak(progresses);
+            toSave.setSkillStreakDays(streak);
+            return toSave;
+        })
         .collect(Collectors.toList());
   }
   
@@ -44,7 +52,13 @@ public class SkillServiceImpl implements SkillService {
   public List<SkillDetailDto> getAllSkillsById(User user) {
     LOGGER.info("Getting all skills by user {}", user);
     return skillRepository.findByUserId(user.getId()).stream()
-        .map(skill -> new SkillDetailDto(skill, user))
+        .map(skill -> {
+          SkillDetailDto toSave = new SkillDetailDto(skill, skill.getUser());
+          List<SkillProgress> progresses = skillProgressRepository.findAllByUser_IdAndSkill_Id(skill.getUser().getId(), skill.getId());
+          int streak = calculateStreak(progresses);
+          toSave.setSkillStreakDays(streak);
+          return toSave;
+        })
         .collect(Collectors.toList());
   }
   
@@ -103,5 +117,26 @@ public class SkillServiceImpl implements SkillService {
   public void deleteSkill(Long id) {
     LOGGER.info("Deleting skill {}", id);
     skillRepository.deleteById(id);
+  }
+  
+  private int calculateStreak(List<SkillProgress> skills) {
+    if (skills.size() < 2) return 0;
+    
+    int streak = 0;
+    
+    for (int i = 0; i < skills.size() - 1; i++) {
+      LocalDateTime beforeDate = skills.get(i).getTimestamp().toLocalDate().atStartOfDay();
+      LocalDateTime afterDate  = skills.get(i + 1).getTimestamp().toLocalDate().atStartOfDay();
+      
+      long daysBetween = ChronoUnit.DAYS.between(beforeDate, afterDate);
+      long positive = Math.abs(daysBetween);
+      
+      if (positive == 1) {
+        streak++;
+      } else if (positive > 1) {
+        streak = 0;
+      }
+    }
+    return streak;
   }
 }

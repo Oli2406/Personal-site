@@ -8,7 +8,7 @@ public class SkillProgressDto {
   private String description;
   private int level;
   private LocalDateTime createdAt;
-  private int skillStreakDays = 0;
+  private int skillStreakDays;
   
   public SkillProgressDto(Long id, String name, String description, int level, LocalDateTime createdAt) {
     this.id = id;
@@ -16,6 +16,7 @@ public class SkillProgressDto {
     this.description = description;
     this.level = level;
     this.createdAt = createdAt;
+    this.skillStreakDays = 0;
   }
   
   public SkillProgressDto() {}
