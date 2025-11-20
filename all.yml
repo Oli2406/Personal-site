@@ -74,10 +74,15 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+
       containers:
         - name: backend
           image: personal-site-backend
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
@@ -122,8 +127,6 @@ spec:
                 port:
                   number: 8080
 
-
-
 # ==============================================
 # Frontend (NGINX + Ingress)
 # ==============================================
@@ -145,7 +148,7 @@ spec:
       containers:
         - name: frontend
           image: personal-site-frontend
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
           env:
