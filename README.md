@@ -24,7 +24,6 @@ Here are some of the main features included (or planned):
 | 🧠 **Authentication** | Secure login system using JWT-based authentication. |
 | 🗃️ **Database Integration** | PostgreSQL backend with persistent storage for messages, accounts, chatrooms and skills. |
 | 🎨 **Modern UI** | Built with TailwindCSS for a sleek and responsive design. |
-
 --- 
 
 ## ☸️ Run with Docker Desktop & Kubernetes
