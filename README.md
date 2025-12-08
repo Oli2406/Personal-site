@@ -11,6 +11,7 @@ This is my personal portfolio website which will be built to showcase my project
 | 👤 **About Section** | ![Chat Screenshot](./showcaseScreenshots/about_example.png) |
 ---
 
+
 ## 🧩 Features
 
 Here are some of the main features included (or planned):
