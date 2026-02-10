@@ -3,6 +3,7 @@ package com.oliver.portfolio.endpoint;
 import com.oliver.portfolio.endpoint.dto.AuthResponseDto;
 import com.oliver.portfolio.endpoint.dto.LoginRequestDto;
 import com.oliver.portfolio.endpoint.dto.RegisterRequestDto;
+import com.oliver.portfolio.enums.Role;
 import com.oliver.portfolio.exception.ConflictException;
 import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.service.AuthService;
@@ -34,7 +35,7 @@ public class AuthEndpoint {
   @PostMapping("/register")
   public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterRequestDto request) throws ConflictException {
     LOGGER.info("Register request: {}", request);
-    request.setRole("user");
+    request.setRole(Role.USER);
     return ResponseEntity.ok(authService.register(request));
   }
   

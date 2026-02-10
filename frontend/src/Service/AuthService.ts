@@ -31,7 +31,9 @@ export const AuthService = {
     async register(registerData: RegisterRequest): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(registerData),
         });
 
@@ -40,4 +42,31 @@ export const AuthService = {
             throw errorData || { message: "Unknown error occurred." };
         }
     },
+
+    async registerAdmin(registerData: RegisterRequest, token: string): Promise<void> {
+        const response = await fetch(`${API_BASE_URL}/admin/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(registerData),
+        });
+
+        if (!response.ok) {
+            const contentType = response.headers.get("content-type") || "";
+            const errorBody = contentType.includes("application/json")
+                ? await response.json().catch(() => null)
+                : await response.text().catch(() => "");
+
+            throw {
+                status: response.status,
+                body: errorBody,
+                message:
+                    (typeof errorBody === "object" && errorBody?.message) ||
+                    (typeof errorBody === "string" && errorBody) ||
+                    `Request failed with status ${response.status}`,
+            };
+        }
+    }
 };

@@ -5,7 +5,7 @@ import com.oliver.portfolio.enums.Role;
 public class RegisterRequestDto {
   private String username;
   private String password;
-  private String role;
+  private Role role;
   
   public String getUsername() {
     return username;
@@ -23,11 +23,11 @@ public class RegisterRequestDto {
     this.password = password;
   }
   
-  public String getRole() {
+  public Role getRole() {
     return role;
   }
   
-  public void setRole(String role) {
+  public void setRole(Role role) {
     this.role = role;
   }
 }
