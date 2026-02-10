@@ -3,17 +3,15 @@ package com.oliver.portfolio.endpoint.dto;
 import com.oliver.portfolio.enums.Role;
 import com.oliver.portfolio.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserDetailDto {
   private long id;
-  private String userName;
+  private String username;
   private Role role;
   
   public void mapUserToUserDetailDto(User user) {
     this.id = user.getId();
-    this.userName = user.getUsername();
+    this.username = user.getUsername();
     this.role = user.getRole();
   }
   
@@ -26,11 +24,11 @@ public class UserDetailDto {
   }
   
   public String getUserName() {
-    return userName;
+    return username;
   }
   
-  public void setUserName(String userName) {
-    this.userName = userName;
+  public void setUserName(String username) {
+    this.username = username;
   }
   
   public Role getRole() {

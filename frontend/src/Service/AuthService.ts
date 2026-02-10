@@ -11,6 +11,11 @@ export interface RegisterRequest {
     role: string;
 }
 
+export interface User {
+    userName: string;
+    role: string;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 export const AuthService = {
@@ -68,5 +73,36 @@ export const AuthService = {
                     `Request failed with status ${response.status}`,
             };
         }
+    },
+
+    async getAllUsers(token: string): Promise<User[]> {
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        };
+
+        const response = await fetch(`${API_BASE_URL}/admin`, {
+            method: "GET",
+            headers
+        })
+
+        if (!response.ok) {
+            const contentType = response.headers.get("content-type") || "";
+            const errorBody = contentType.includes("application/json")
+                ? await response.json().catch(() => null)
+                : await response.text().catch(() => "");
+
+            throw {
+                status: response.status,
+                body: errorBody,
+                message:
+                    (typeof errorBody === "object" && errorBody?.message) ||
+                    (typeof errorBody === "string" && errorBody) ||
+                    `Request failed with status ${response.status}`,
+            };
+        }
+        const result = await response.json();
+        console.log(result)
+        return result;
     }
 };

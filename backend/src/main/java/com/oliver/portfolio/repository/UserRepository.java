@@ -5,13 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
   
-  User findByUsername(String userName) throws UsernameNotFoundException;
+  User findByUsername(String username) throws UsernameNotFoundException;
   
-  boolean existsByUsername(String userName);
+  boolean existsByUsername(String username);
   
 }
