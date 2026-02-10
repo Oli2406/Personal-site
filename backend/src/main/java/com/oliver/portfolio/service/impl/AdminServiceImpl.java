@@ -38,4 +38,16 @@ public class AdminServiceImpl implements AdminService {
     }
     return userDetailDtos;
   }
+  
+  @Override
+  public List<UserDetailDto> getUsersByUsername(String username) {
+    List<User> filteredUsers = userRepository.findByUsernameContainingIgnoreCase(username);
+    List<UserDetailDto> userDetailDtos = new ArrayList<>();
+    for (User user : filteredUsers) {
+      UserDetailDto userDetailDto = new UserDetailDto();
+      userDetailDto.mapUserToUserDetailDto(user);
+      userDetailDtos.add(userDetailDto);
+    }
+    return userDetailDtos;
+  }
 }

@@ -8,7 +8,7 @@ import com.oliver.portfolio.exception.ValidationException;
 
 public interface AuthService {
   
-  public AuthResponseDto register(RegisterRequestDto request) throws ConflictException;
+  AuthResponseDto register(RegisterRequestDto request) throws ConflictException;
   
-  public AuthResponseDto login(LoginRequestDto request) throws ValidationException;
+  AuthResponseDto login(LoginRequestDto request) throws ValidationException;
 }

@@ -7,4 +7,6 @@ import java.util.List;
 public interface AdminService {
   
   List<UserDetailDto> getAllUsers();
+  
+  List<UserDetailDto> getUsersByUsername(String username);
 }

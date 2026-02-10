@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
@@ -51,5 +52,15 @@ public class AdminEndpoint {
     LOGGER.info("createUser {}", request);
     request.setRole(Role.ADMIN);
     return ResponseEntity.ok(authService.register(request));
+  }
+  
+  @GetMapping("/search")
+  @Secured("ROLE_ADMIN")
+  public List<UserDetailDto> search(@RequestParam("q") String username) {
+    if(username == null || username.trim().isEmpty()) {
+      return List.of();
+    }
+    LOGGER.info("searching for user with username {}", username);
+    return ResponseEntity.ok(adminService.getUsersByUsername(username)).getBody();
   }
 }
