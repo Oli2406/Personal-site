@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {Navigate, Outlet, useNavigate} from "react-router-dom";
 
 interface AuthContextType {
     token: string | null;
@@ -84,3 +84,12 @@ export const useAuth = () => {
     if (!context) throw new Error("useAuth must be used within an AuthProvider");
     return context;
 };
+
+export const AdminRoute = () => {
+    const { isLoggedIn, role } = useAuth();
+
+    if(!isLoggedIn) return <Navigate to="/login" replace />;
+    if(role !== "ADMIN") return <Navigate to="/" />;
+
+    return <Outlet/>;
+}
