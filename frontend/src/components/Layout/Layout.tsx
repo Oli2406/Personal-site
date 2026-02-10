@@ -8,6 +8,8 @@ export default function Layout() {
 
     const { isLoggedIn, logout, getLoggedInUsername } = useAuth();
 
+    const { role } = useAuth();
+
     const username = getLoggedInUsername();
 
     const handleLogout = async () => {
@@ -24,7 +26,14 @@ export default function Layout() {
                 {!isLoggedIn ? (
                     <h1>🌟 Hello Stranger</h1>
                 ) : (
+                    <>
                     <h1>👋 Welcome {username}</h1>
+                    {role === "ADMIN" ? (
+                        <span>Admin View</span>
+                        ) : (
+                        <span>User View</span>
+                    )}
+                    </>
                 )
                 }
                 <div className="flex items-center gap-4 text-sm">

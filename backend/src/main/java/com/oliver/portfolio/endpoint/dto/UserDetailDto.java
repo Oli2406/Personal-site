@@ -3,6 +3,9 @@ package com.oliver.portfolio.endpoint.dto;
 import com.oliver.portfolio.enums.Role;
 import com.oliver.portfolio.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserDetailDto {
   private long id;
   private String userName;
