@@ -9,8 +9,6 @@ This is my personal portfolio website which will be built to showcase my project
 | 💬 **Chatroom Example** | ![Home Screenshot](./showcaseScreenshots/chatroom_example.png) |
 | 💡 **Skill Tracker** | ![Skills Screenshot](./showcaseScreenshots/skills_example_v2.png) |
 | 👤 **About Section** | ![Chat Screenshot](./showcaseScreenshots/about_example.png) |
-
-
 ---
 
 ## 🧩 Features
@@ -26,7 +24,6 @@ Here are some of the main features included (or planned):
 | 🧠 **Authentication** | Secure login system using JWT-based authentication. |
 | 🗃️ **Database Integration** | PostgreSQL backend with persistent storage for messages, accounts, chatrooms and skills. |
 | 🎨 **Modern UI** | Built with TailwindCSS for a sleek and responsive design. |
-
 --- 
 
 ## ☸️ Run with Docker Desktop & Kubernetes
@@ -60,8 +57,7 @@ If you have **Docker Desktop** with **Kubernetes enabled**, you can deploy the e
    http://frontend.localhost
    ```
 
-NOTE: This is still a work in progress and not all features work while deployed.
-
+NOTE: This is still a work in progress and not all features work while deployed
 ---
 
 ## 🧠 Run Locally
@@ -72,7 +68,6 @@ If you wish to run the stack locally follow these steps:
 - [Java 21+](https://adoptium.net/)
 - [Maven 3.9+](https://maven.apache.org/install.html)
 - [Node.js 10+ and npm](https://nodejs.org/)
-
 ---
 
 ## ⚙️ 1. Run the Backend
@@ -89,7 +84,6 @@ If you wish to run the stack locally follow these steps:
 
 The backend will automatically connect to the configured PostgreSQL database  
 and start on **http://localhost:8080**.
-
 ---
 
 ## 🎨 2. Run the Frontend
@@ -108,7 +102,6 @@ and start on **http://localhost:8080**.
    ```
 
 The frontend will be available at **http://localhost:5202** and will automatically connect to the backend.
-
 ---
 
 ✅ You now have both servers running locally:
