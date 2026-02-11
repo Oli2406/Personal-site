@@ -122,19 +122,18 @@ public class SkillServiceImpl implements SkillService {
   private int calculateStreak(List<SkillProgress> skills) {
     if (skills.size() < 2) return 0;
     
-    int streak = 0;
+    int streak = 1;
     
     for (int i = 0; i < skills.size() - 1; i++) {
       LocalDateTime beforeDate = skills.get(i).getTimestamp().toLocalDate().atStartOfDay();
       LocalDateTime afterDate  = skills.get(i + 1).getTimestamp().toLocalDate().atStartOfDay();
       
       long daysBetween = ChronoUnit.DAYS.between(beforeDate, afterDate);
-      long positive = Math.abs(daysBetween);
       
-      if (positive == 1) {
+      if (daysBetween == 1) {
         streak++;
-      } else if (positive > 1) {
-        streak = 0;
+      } else {
+        streak = 1;
       }
     }
     return streak;
