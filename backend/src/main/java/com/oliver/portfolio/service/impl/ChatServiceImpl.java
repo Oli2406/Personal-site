@@ -1,5 +1,6 @@
 package com.oliver.portfolio.service.impl;
 
+import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.model.ChatRoom;
 import com.oliver.portfolio.model.ChatRoomMember;
@@ -12,8 +13,11 @@ import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.validator.MessageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
@@ -21,6 +25,8 @@ import java.util.List;
 
 @Service
 public class ChatServiceImpl implements ChatService {
+  private final RouterFunctionMapping routerFunctionMapping;
+  private final HandlerMapping resourceHandlerMapping;
   private ChatRoomRepository chatRoomRepository;
   private MessageRepository messageRepository;
   private ChatRoomMemberRepository chatRoomMemberRepository;
@@ -32,11 +38,13 @@ public class ChatServiceImpl implements ChatService {
   public ChatServiceImpl(ChatRoomRepository chatRoomRepository,
                          MessageRepository messageRepository,
                          ChatRoomMemberRepository chatRoomMemberRepository,
-                         MessageValidator messageValidator) {
+                         MessageValidator messageValidator, RouterFunctionMapping routerFunctionMapping, @Qualifier("resourceHandlerMapping") HandlerMapping resourceHandlerMapping) {
     this.chatRoomRepository = chatRoomRepository;
     this.messageRepository = messageRepository;
     this.chatRoomMemberRepository = chatRoomMemberRepository;
     this.messageValidator = messageValidator;
+    this.routerFunctionMapping = routerFunctionMapping;
+    this.resourceHandlerMapping = resourceHandlerMapping;
   }
   
   @Override
@@ -95,5 +103,17 @@ public class ChatServiceImpl implements ChatService {
   public List<Message> getMessageAfterJoin(ChatRoom room, String username) {
     LOGGER.info("Getting messages after joining room {}", room);
     return messageRepository.findMessagesAfterUserJoined(room, username);
+  }
+  
+  @Override
+  public MessageSearchDto searchMessages(Long roomId, String query, String username) {
+    LOGGER.info("Searching messages in room {} with query {} for user {}", roomId, query, username);
+    
+    ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
+    
+    List<Message> messages = messageRepository.findMessagesByRoomAndContentAfterUserJoined(chatRoom, query, username);
+    
+    return new MessageSearchDto(roomId, query, messages);
   }
 }

@@ -30,4 +30,22 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
       @Param("username") String username
   );
   
+  @Query("""
+    SELECT m
+    FROM Message m
+    WHERE m.room = :room
+    AND m.content LIKE %:content%
+    AND m.timestamp > (
+        SELECT cm.joinedAt
+        FROM ChatRoomMember cm
+        WHERE cm.room = :room AND cm.user.username = :username
+    )
+    ORDER BY m.timestamp ASC
+    """)
+  List<Message> findMessagesByRoomAndContentAfterUserJoined(
+      ChatRoom room,
+      String content,
+      String username
+  );
+  
 }

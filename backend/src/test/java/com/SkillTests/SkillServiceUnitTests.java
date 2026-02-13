@@ -136,7 +136,7 @@ class SkillServiceUnitTests {
   }
   
   @Test
-  void getAllSkillsSetsStreakDaysToTwo_whenTwoConsecutiveDays() {
+  void getAllSkillsSetsStreakDaysToThree_whenThreeConsecutiveDays() {
     Skill skill = createTestSkill();
     
     when(skillRepository.findAll()).thenReturn(List.of(skill));
