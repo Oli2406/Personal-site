@@ -1,5 +1,6 @@
 package com.oliver.portfolio.service.impl;
 
+import com.oliver.portfolio.endpoint.dto.MessageAllChatRoomsSearchDto;
 import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.exception.ValidationException;
 import com.oliver.portfolio.model.ChatRoom;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -115,5 +117,22 @@ public class ChatServiceImpl implements ChatService {
     List<Message> messages = messageRepository.findMessagesByRoomAndContentAfterUserJoined(chatRoom, query, username);
     
     return new MessageSearchDto(roomId, query, messages);
+  }
+  
+  @Override
+  public List<MessageAllChatRoomsSearchDto> searchMessagesAcrossJoinedRooms(String query, String username) {
+    LOGGER.info("Searching messages across all joined rooms with query {} for user {}", query, username);
+    List<Message> messages = messageRepository.findMessagesByContentAcrossJoinedRoomsAfterUserJoined(query, username);
+    
+    List<MessageAllChatRoomsSearchDto> toReturn = new ArrayList<>();
+    
+    for (Message message : messages) {
+      toReturn.add(new MessageAllChatRoomsSearchDto(
+          message.getRoom().getId(),
+          query,
+          message
+      ));
+    }
+    return toReturn;
   }
 }

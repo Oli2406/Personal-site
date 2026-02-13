@@ -33,8 +33,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   @Query("""
     SELECT m
     FROM Message m
+    JOIN FETCH m.room
     WHERE m.room = :room
-    AND m.content LIKE %:content%
+    AND LOWER(m.content) LIKE LOWER(CONCAT('%', :content, '%'))
     AND m.timestamp > (
         SELECT cm.joinedAt
         FROM ChatRoomMember cm
@@ -48,4 +49,24 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
       String username
   );
   
+  @Query("""
+    SELECT m
+    FROM Message m
+    JOIN FETCH m.room
+    WHERE LOWER(m.content) LIKE LOWER(CONCAT('%', :content, '%'))
+    AND m.timestamp > (
+        SELECT cm.joinedAt
+        FROM ChatRoomMember cm
+        WHERE cm.room = m.room AND cm.user.username = :username
+    )
+    AND m.room.id IN (
+        SELECT cm.room.id
+        FROM ChatRoomMember cm
+        WHERE cm.user.username = :username
+    )
+    """)
+  List<Message> findMessagesByContentAcrossJoinedRoomsAfterUserJoined(
+      @Param("content") String content,
+      @Param("username") String username
+  );
 }

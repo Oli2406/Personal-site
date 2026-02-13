@@ -1,5 +1,6 @@
 package com.oliver.portfolio.endpoint;
 
+import com.oliver.portfolio.endpoint.dto.MessageAllChatRoomsSearchDto;
 import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.service.ChatService;
 import com.oliver.portfolio.service.JwtService;
@@ -54,5 +55,16 @@ public class ChatEndpoint {
     String username = jwtService.extractUsername(token);
     
     return ResponseEntity.ok(chatService.searchMessages(roomId, query, username));
+  }
+  
+  @GetMapping("/messages/search")
+  @Secured("ROLE_USER")
+  public ResponseEntity<List<MessageAllChatRoomsSearchDto>> searchMessagesAcrossJoinedRooms(@RequestHeader("Authorization") String authHeader,
+                                                                                            @RequestParam String query) {
+    LOGGER.info("Searching messages across joined rooms with query: {}", query);
+    String token = authHeader.replace("Bearer ", "");
+    String username = jwtService.extractUsername(token);
+    
+    return ResponseEntity.ok(chatService.searchMessagesAcrossJoinedRooms(query, username));
   }
 }
