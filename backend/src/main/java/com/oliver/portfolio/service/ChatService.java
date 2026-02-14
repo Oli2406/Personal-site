@@ -1,5 +1,6 @@
 package com.oliver.portfolio.service;
 
+import com.oliver.portfolio.endpoint.dto.ChatRoomStatsDto;
 import com.oliver.portfolio.endpoint.dto.MessageAllChatRoomsSearchDto;
 import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.exception.ValidationException;
@@ -27,4 +28,7 @@ public interface ChatService {
   MessageSearchDto searchMessages(Long roomId, String query, String username);
   
   List<MessageAllChatRoomsSearchDto> searchMessagesAcrossJoinedRooms(String query, String username);
+  
+  ChatRoomStatsDto getChatRoomStats(Long RoomId);
 }
+

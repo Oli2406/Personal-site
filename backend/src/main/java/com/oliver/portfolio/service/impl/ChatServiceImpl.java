@@ -1,5 +1,6 @@
 package com.oliver.portfolio.service.impl;
 
+import com.oliver.portfolio.endpoint.dto.ChatRoomStatsDto;
 import com.oliver.portfolio.endpoint.dto.MessageAllChatRoomsSearchDto;
 import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.exception.ValidationException;
@@ -129,10 +130,20 @@ public class ChatServiceImpl implements ChatService {
     for (Message message : messages) {
       toReturn.add(new MessageAllChatRoomsSearchDto(
           message.getRoom().getId(),
+          message.getRoom().getCode(),
           query,
           message
       ));
     }
     return toReturn;
   }
+  
+  @Override
+  public ChatRoomStatsDto getChatRoomStats(Long roomId) {
+    int memberCount = chatRoomMemberRepository.countChatRoomMembersByRoomId(roomId);
+    int messageCount = messageRepository.countMessagesByRoomId(roomId);
+    
+    return new ChatRoomStatsDto(roomId, memberCount, messageCount);
+  }
 }
+

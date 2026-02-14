@@ -77,27 +77,61 @@ public class ChatRoomDataGenerator implements CommandLineRunner {
     LOGGER.info("Generated {} chat rooms", chatRooms.size());
   }
   
+  private static final List<String> SAMPLE_MESSAGES = Arrays.asList(
+      "Hey everyone!",
+      "What's up?",
+      "Anyone here?",
+      "This is a cool room",
+      "How's it going?",
+      "Just joined, hi!",
+      "What are we talking about?",
+      "Interesting topic",
+      "I agree with that",
+      "Not sure about that one",
+      "Can someone explain?",
+      "That makes sense",
+      "Good point!",
+      "lol",
+      "haha nice",
+      "brb",
+      "I'm back",
+      "Anyone want to chat?",
+      "This is fun",
+      "See you later!"
+  );
+
   private void generateMessagesAndChatRoomMembers() {
     List<ChatRoom> rooms = chatRoomRepository.findAll();
     List<User> users = userRepository.findAll();
-    
+
     Random random = new Random();
-    
-    rooms.stream().forEach(room -> {
+
+    rooms.forEach(room -> {
       int groupSize = random.nextInt(2, 5);
       Set<User> members = new HashSet<>();
+      
+      // Add members to room
       IntStream.range(0, groupSize)
           .mapToObj(i -> users.get(random.nextInt(users.size())))
           .filter(members::add)
           .forEach(user -> {
             chatRoomMemberRepository.save(
-                new ChatRoomMember(room, user, Instant.now(), ChatRoomMember.MembershipStatus.ACTIVE)
+                new ChatRoomMember(room, user, Instant.now().minusSeconds(3600), ChatRoomMember.MembershipStatus.ACTIVE)
             );
-            messageRepository.save(new Message(user.getUsername(), "message", room));
           });
+      
+      List<User> memberList = members.stream().toList();
+      int totalMessages = random.nextInt(10, 30);
+      
+      for (int i = 0; i < totalMessages; i++) {
+        User sender = memberList.get(random.nextInt(memberList.size()));
+        String content = SAMPLE_MESSAGES.get(random.nextInt(SAMPLE_MESSAGES.size()));
+        Message msg = new Message(sender.getUsername(), content, room);
+        msg.setTimestamp(Instant.now().minusSeconds(random.nextInt(3500)));
+        messageRepository.save(msg);
+      }
     });
-    
-    
+
     LOGGER.info("Generated {} messages", messageRepository.count());
   }
 }

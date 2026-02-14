@@ -26,4 +26,6 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     WHERE m.room = :room
     """)
   List<ChatRoomMember> findAllByRoom(@Param("room") ChatRoom room);
+  
+  int countChatRoomMembersByRoomId(Long roomId);
 }

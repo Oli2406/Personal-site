@@ -1,5 +1,6 @@
 package com.oliver.portfolio.endpoint;
 
+import com.oliver.portfolio.endpoint.dto.ChatRoomStatsDto;
 import com.oliver.portfolio.endpoint.dto.MessageAllChatRoomsSearchDto;
 import com.oliver.portfolio.endpoint.dto.MessageSearchDto;
 import com.oliver.portfolio.service.ChatService;
@@ -66,5 +67,13 @@ public class ChatEndpoint {
     String username = jwtService.extractUsername(token);
     
     return ResponseEntity.ok(chatService.searchMessagesAcrossJoinedRooms(query, username));
+  }
+  
+  @GetMapping("/rooms/{roomId}/stats")
+  @Secured("ROLE_USER")
+  public ResponseEntity<ChatRoomStatsDto> getChatRoomStats(@PathVariable Long roomId) {
+    LOGGER.info("Getting stats for chat room {}", roomId);
+    
+    return ResponseEntity.ok(chatService.getChatRoomStats(roomId));
   }
 }

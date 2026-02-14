@@ -69,4 +69,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
       @Param("content") String content,
       @Param("username") String username
   );
+  
+  int countMessagesByRoomId(Long roomId);
 }
+
