@@ -142,8 +142,18 @@ public class ChatServiceImpl implements ChatService {
   public ChatRoomStatsDto getChatRoomStats(Long roomId) {
     int memberCount = chatRoomMemberRepository.countChatRoomMembersByRoomId(roomId);
     int messageCount = messageRepository.countMessagesByRoomId(roomId);
+    String mostActiveUser = messageRepository.findMostActiveUserInRoom(roomId);
+    int messagesFromMostActiveUser = messageRepository.countMessagesBySenderAndRoomId(mostActiveUser, roomId);
+    List<Object[]> mostActiveDayHeatMapData = messageRepository.countMessagesByRoomIdGroupByDayOfWeek(roomId);
     
-    return new ChatRoomStatsDto(roomId, memberCount, messageCount);
+    return new ChatRoomStatsDto(
+        roomId,
+        memberCount,
+        messageCount,
+        mostActiveUser,
+        messagesFromMostActiveUser,
+        mostActiveDayHeatMapData
+    );
   }
 }
 

@@ -71,5 +71,26 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
   );
   
   int countMessagesByRoomId(Long roomId);
+  
+  @Query("""
+    SELECT m.sender
+    FROM Message m
+    WHERE m.room.id = :roomId
+    GROUP BY m.sender
+    ORDER BY COUNT(m) DESC
+    LIMIT 1
+    """)
+  String findMostActiveUserInRoom(Long roomId);
+  
+  int countMessagesBySenderAndRoomId(String sender, Long roomId);
+  
+  @Query(value = """
+    SELECT EXTRACT(ISODOW FROM m.timestamp) AS dayOfWeek, COUNT(m) AS messageCount
+    FROM messages m
+    WHERE m.room_id = :roomId
+    GROUP BY dayOfWeek
+    ORDER BY dayOfWeek ASC
+    """, nativeQuery = true)
+  List<Object[]> countMessagesByRoomIdGroupByDayOfWeek(Long roomId);
 }
 

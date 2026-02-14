@@ -110,7 +110,6 @@ public class ChatRoomDataGenerator implements CommandLineRunner {
       int groupSize = random.nextInt(2, 5);
       Set<User> members = new HashSet<>();
       
-      // Add members to room
       IntStream.range(0, groupSize)
           .mapToObj(i -> users.get(random.nextInt(users.size())))
           .filter(members::add)
@@ -121,13 +120,17 @@ public class ChatRoomDataGenerator implements CommandLineRunner {
           });
       
       List<User> memberList = members.stream().toList();
-      int totalMessages = random.nextInt(10, 30);
+      int totalMessages = random.nextInt(50, 150);
       
       for (int i = 0; i < totalMessages; i++) {
         User sender = memberList.get(random.nextInt(memberList.size()));
         String content = SAMPLE_MESSAGES.get(random.nextInt(SAMPLE_MESSAGES.size()));
         Message msg = new Message(sender.getUsername(), content, room);
-        msg.setTimestamp(Instant.now().minusSeconds(random.nextInt(3500)));
+        int daysAgo = random.nextInt(30);
+        int hoursAgo = random.nextInt(24);
+        int minutesAgo = random.nextInt(60);
+        long totalSecondsAgo = (daysAgo * 86400L) + (hoursAgo * 3600L) + (minutesAgo * 60L);
+        msg.setTimestamp(Instant.now().minusSeconds(totalSecondsAgo));
         messageRepository.save(msg);
       }
     });
